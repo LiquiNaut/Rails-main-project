@@ -1,0 +1,7 @@
+<div class="d-flex justify-content-center align-items-center mb-3">
+  <div>
+    <% if user_signed_in? %>
+      <b><%= current_user.email %></b>, welcome!
+    <% end %>
+  </div>
+</div>

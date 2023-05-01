@@ -1,0 +1,12 @@
+<div>
+  <%= link_to 'Faktúry', root_path, class:"navbar-brand fs-2 my-auto fw-bold float-md-start text-white" %>
+  <nav class="nav nav-masthead justify-content-center float-md-end m-0">
+    <% if user_signed_in? %>
+      <%= link_to "Edit profile", edit_user_registration_path, class:"nav-link text-dark fw-bold px-2" %>
+      <%= button_to "Log out", destroy_user_session_path, method: :delete, class:"btn btn-link nav-link fw-bold px-2 text-danger danger" %>
+    <% else %>
+      <%= link_to "Sign up", new_user_registration_path, class:"nav-link fw-bold px-2" %>
+      <%= link_to "Log in", new_user_session_path, class:"nav-link fw-bold px-2 text-info" %>
+    <% end %>
+  </nav>
+</div>

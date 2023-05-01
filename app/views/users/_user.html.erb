@@ -1,0 +1,14 @@
+<div class="p-5 mb-4 text-light rounded-3 text-start">
+  <div class="container-fluid py-5">
+
+    <%= render partial: "users/user_card", locals: {user: user}  %>
+
+    <p class="card-text">
+    <%= link_to "Back", users_path, class:"btn btn-outline-light" %>
+
+    <% if user == current_user %>
+      <%= link_to "Edit profile", edit_user_registration_path, class:"btn btn-outline-warning" %>
+    <% end %>
+    </p>
+  </div>
+</div>

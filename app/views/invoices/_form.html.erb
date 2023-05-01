@@ -1,0 +1,69 @@
+<div class="form-signin my-4 mx-auto w-75">
+  <%= form_with(model: invoice) do |form| %>
+    <div class="d-flex">
+      <div class="form-group mb-3 me-2 w-50">
+        <%= form.label "IČO" %>
+        <%= form.text_field :ico, autofocus: true, class:"form-control"%>
+      </div>
+
+      <div class="form-group mb-3 ms-2 w-50">
+        <%= form.label "DIČ" %>
+        <%= form.text_field :dic, autofocus: true, class:"form-control" %>
+      </div>
+    </div>
+
+    <div class="d-flex">
+      <div class="form-group mb-3 me-2 w-50">
+          <%= form.label "First name" %>
+          <%= form.text_field :first_name, autocomplete: "given-name", class:"form-control"%>
+        </div>
+
+      <div class="form-group mb-3 me-2 w-50">
+          <%= form.label "Last name" %>
+          <%= form.text_field :last_name, autocomplete: "family-name", class:"form-control" %>
+        </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <%= form.label "Entity name" %> <br />
+      <%= form.text_area :entity_name, autofocus: true, class:"form-control" %>
+    </div>
+
+    <hr>
+
+    <div class="d-flex">
+      <div class="form-group mb-3 me-2 w-50">
+        <%= form.label "Street" %>
+        <%= form.text_field :street, class:"form-control"%>
+      </div>
+
+      <div class="form-group mb-3 me-2 w-50">
+        <%= form.label "Street note" %>
+        <%= form.text_field :street_note, class:"form-control" %>
+      </div>
+    </div>
+
+    <div class="d-flex">
+      <div class="form-group mb-3 me-2 w-50">
+        <%= form.label "City" %>
+        <%= form.text_field :city, class:"form-control"%>
+      </div>
+
+      <div class="form-group mb-3 me-2 w-50">
+        <%= form.label "PSČ" %>
+        <%= form.text_field :postal_code, class:"form-control" %>
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <%= form.label "Country" %>
+      <%= form.text_field :country, class:"form-control" %>
+    </div>
+
+    <div class="form-group mb-3">
+      <%= form.number_field :user_id, type: :hidden, class:"form-control", value: current_user.id %>
+    </div>
+
+    <%= form.submit "Uložiť", class:"btn btn-lg btn-light my-auto"%>
+  <% end %>
+</div>

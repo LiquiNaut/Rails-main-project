@@ -1,0 +1,23 @@
+<h1 class="text-center my-4">Faktúry Users</h1>
+
+<div id="users" class="text-center mx-auto w-100">
+  <table class="table table-hover table-active text-light">
+    <thead>
+    <tr>
+      <th scope="col">Email</th>
+      <th scope="col"><%= "Action" %></th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @users.each do |user| %>
+      <tr class="text-light">
+        <td><%= user.email %></td>
+        <td><%= link_to "Show", user, class:"text-info" %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <%#= page_entries_info @users %>
+  <%#= paginate @users, theme: 'bootstrap-5', pagination_class: "my-3 pagination-sm flex-wrap justify-content-center" %>
+
+</div>
