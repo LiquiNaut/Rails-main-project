@@ -8,19 +8,19 @@
     </div>
 
     <div class="form-group mb-3">
-      <%= f.label t(:'devise.password') %><br />
+      <%= f.label "Heslo" %><br />
       <%= f.password_field :password, autocomplete: "current-password", class:"form-control" %>
     </div>
 
     <div class="my-3 text-white">
-      <%= "Don't have an account yet?" %>
+      <%= "Ešte nemáš účet?" %>
       <div class="my-3 text-white fw-bold">
         <%= render "devise/shared/links" %>
       </div>
     </div>
 
     <div class="actions">
-      <%= f.submit "Log in", class:"btn btn-light my-auto" %>
+      <%= f.submit "Prihlásiť sa", class:"btn btn-light my-auto" %>
     </div>
 
   <% end %>
