@@ -1,5 +1,6 @@
 class InvoicesController < ApplicationController
   before_action :set_invoice, only: %i[ show edit update destroy ]
+  before_action :authorize, only: %i[ show edit update destroy ]
 
   def show
   end
@@ -37,14 +38,11 @@ class InvoicesController < ApplicationController
     end
   end
 
-  def index
-  end
-
   def destroy
     @invoice.destroy
 
     respond_to do |format|
-      format.html { redirect_to invoices_url, notice: "Faktúra bola úspeśne odstránená" }
+      format.html { redirect_to user_url(current_user), notice: "Faktúra bola úspeśne odstránená" }
       format.json { head :no_content }
     end
   end
@@ -59,5 +57,11 @@ class InvoicesController < ApplicationController
 
   def set_invoice
     @invoice = Invoice.find(params[:id])
+  end
+
+  def authorize
+    unless @invoice.user == current_user
+      redirect_back fallback_location: root_path, alert: "K faktúre nemáš prístup!"
+    end
   end
 end
