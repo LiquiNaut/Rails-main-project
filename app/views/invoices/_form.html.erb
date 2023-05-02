@@ -14,18 +14,18 @@
 
     <div class="d-flex">
       <div class="form-group mb-3 me-2 w-50">
-          <%= form.label "First name" %>
+          <%= form.label "Krstné meno" %>
           <%= form.text_field :first_name, autocomplete: "given-name", class:"form-control"%>
         </div>
 
       <div class="form-group mb-3 me-2 w-50">
-          <%= form.label "Last name" %>
+          <%= form.label "Priezvisko" %>
           <%= form.text_field :last_name, autocomplete: "family-name", class:"form-control" %>
         </div>
     </div>
 
     <div class="form-group mb-3">
-      <%= form.label "Entity name" %> <br />
+      <%= form.label "Názov entity" %> <br />
       <%= form.text_area :entity_name, autofocus: true, class:"form-control" %>
     </div>
 
@@ -33,19 +33,19 @@
 
     <div class="d-flex">
       <div class="form-group mb-3 me-2 w-50">
-        <%= form.label "Street" %>
+        <%= form.label "Ulica" %>
         <%= form.text_field :street, class:"form-control"%>
       </div>
 
       <div class="form-group mb-3 me-2 w-50">
-        <%= form.label "Street note" %>
+        <%= form.label "Popisné číslo" %>
         <%= form.text_field :street_note, class:"form-control" %>
       </div>
     </div>
 
     <div class="d-flex">
       <div class="form-group mb-3 me-2 w-50">
-        <%= form.label "City" %>
+        <%= form.label "Mesto" %>
         <%= form.text_field :city, class:"form-control"%>
       </div>
 
@@ -56,7 +56,7 @@
     </div>
 
     <div class="form-group mb-3">
-      <%= form.label "Country" %>
+      <%= form.label "Krajina" %>
       <%= form.text_field :country, class:"form-control" %>
     </div>
 
