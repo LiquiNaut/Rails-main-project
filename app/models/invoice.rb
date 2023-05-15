@@ -2,19 +2,19 @@
 
 class Invoice < ApplicationRecord
   belongs_to :user
+  has_many :entities, class_name: "Entity", dependent: :destroy
+  has_one :bank_detail, class_name: "BankDetail", dependent: :destroy
+  accepts_nested_attributes_for :entities, :bank_detail
 
-  validates :ico, presence: true
-  # validates :dic
-  # validates :first_name
-  # validates :last_name
-  # validates :entity_name
-  # validates :street
-  # validates :street_note
-  # validates :city
-  # validates :postal_code
-  # validates :country
+  def seller
+    self.entities.seller.first
+  end
 
-  def full_name
-    "#{self.first_name} #{self.last_name}"
+  def buyer
+    self.entities.buyer.first
+  end
+
+  def tax_representative
+    self.entities.tax_representative.first
   end
 end
