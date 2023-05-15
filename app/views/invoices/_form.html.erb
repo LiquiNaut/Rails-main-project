@@ -1,10 +1,14 @@
 <div class="form-signin my-4 mx-auto w-75">
   <%= form_with(model: invoice) do |form| %>
-    <div class="container">
+    <div class="container p-5 bg-white rounded">
       <div class="row">
         <!-- Entities: SELLER/BUYER/TAX_REPRESENTATIVE -->
         <%= form.label "Názov faktúry: " %>
         <%= form.text_field :invoice_name, class: "form-control mb-3" %>
+
+        <%= form.label "Vyhľadanie osoby alebo firmy podľa mena: " %>
+        <%= form.text_field :search_entity_text, class: "select2-enable form-control mb-3" %>
+        <%#= form.hidden_field :search_entity, class: "select2-enable form-control mb-3", style: "width: 100%;" %>
 
         <% invoice.entities.each do |entity| %>
           <div class="col-md-4">
@@ -236,5 +240,71 @@
                 });
             }
         });
+
+        $('.select2-enable').select2({
+            ajax: {
+                url: 'http://localhost:3000/api/search_by_name',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        search: params.term // search term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function(item) {
+                            return {
+                                text: item.first_name + ' ' + item.last_name + ' (' + item.entity_name + ')',
+                                id: item.id,
+                                data: item
+                            }
+                        })
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2
+        }).on('select2:select', function (e) {
+            var data = e.params.data.data;
+            console.log(data);
+
+            $("#first_name-seller").val(data.first_name);
+            $("#last_name-seller").val(data.last_name);
+            $("#ico-seller").val(data.ico);
+            $("#dic-seller").val(data.dic);
+            $("#ic_dph-seller").val(data.ic_dph);
+            $("#entity_name-seller").val(data.entity_name);
+
+            if (data.addresses && data.addresses.length > 0) {
+                const adress = data.addresses[0];
+                $("#street-seller").val(adress.street);
+                $("#postal_code-seller").val(adress.postal_code);
+
+                const street_notes = [];
+                if(adress.building_number != null)
+                {
+                    street_notes.push(adress.building_number)
+                }
+                if(adress.reg_number != null)
+                {
+                    street_notes.push(adress.reg_number)
+                }
+                const street_note = street_notes.join('/');
+                $("#street_note-seller").val(String(street_note));
+
+                const municipality = adress.municipality;
+                $("#city-seller").val(municipality.name);
+
+                const country = adress.country;
+                $("#country-seller").val(country.name);
+            }
+        });
+
+        // Synchronize select2 with text field
+        // $('.select2-enable').on('select2:select', function (e) {
+        //     var data = e.params.data;
+        //     $('#search_entity_text').val(data.text);
+        // });
     });
 </script>
