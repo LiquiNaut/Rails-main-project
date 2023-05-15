@@ -7,6 +7,14 @@ class InvoicesController < ApplicationController
 
   def new
     @invoice = Invoice.new
+    @seller = Entity.new(entity_type: 'seller', invoice: @invoice)
+    @buyer = Entity.new(entity_type: 'buyer', invoice: @invoice)
+    @tax_representative = Entity.new(entity_type: 'tax_representative', invoice: @invoice)
+
+    @invoice.entities << [@seller, @buyer, @tax_representative]
+
+    @bank_detail = BankDetail.new(invoice: @invoice)
+    @invoice.bank_detail = @bank_detail
   end
 
   def create
@@ -51,7 +59,12 @@ class InvoicesController < ApplicationController
 
   def invoice_params
     params.require(:invoice).permit(
-      :first_name, :last_name, :entity_name, :ico, :dic, :street, :street_note, :city, :postal_code, :country, :user_id
+      :invoice_name, :invoice_number, :issue_date, :shipping_date, :due_date, :vehicle_information, :self_issued_invoice, :tax_liability_shift,
+      :tax_adjustment_type, :user_id, :product_type, :product_quantity, :unit_price_without_tax, :total_price_without_tax,
+      :vat_rate_percentage, :total_tax_amount_eur, entities_attributes: [:id, :first_name, :last_name, :entity_name, :ico, :dic,
+                                                                         :ic_dph, :street, :street_note, :city, :postal_code,
+                                                                         :country, :entity_type],
+      bank_detail_attributes: [:bank_name, :iban, :swift, :var_symbol, :konst_symbol]
     )
   end
 
