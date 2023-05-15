@@ -1,0 +1,67 @@
+<div>
+  <div class="form-group mx-auto">
+    <%= f.label :ico, "IČO", hidden: f.object.tax_representative? %>
+    <%= f.text_field :ico, autofocus: true, class: "form-control", hidden: f.object.tax_representative?, id:"ico-#{f.object.entity_type}" %>
+  </div>
+
+  <div class="form-group mx-auto">
+    <%= f.label :dic, "DIČ", hidden: f.object.tax_representative? %>
+    <%= f.text_field :dic, autofocus: true, class: "form-control", hidden: f.object.tax_representative?, id:"dic-#{f.object.entity_type}" %>
+  </div>
+
+  <div class="form-group mx-auto">
+    <%= f.label :ic_dph, "IČ-DPH" %>
+    <%= f.text_field :ic_dph, autofocus: true, class: "form-control", id:"ic_dph-#{f.object.entity_type}" %>
+  </div>
+
+  <hr>
+
+  <div class="d-flex">
+    <div class="form-group mb-3 me-2 w-50">
+      <%= f.label :first_name, "Krstné meno" %>
+      <%= f.text_field :first_name, autocomplete: "given-name", class: "form-control", id:"first_name-#{f.object.entity_type}" %>
+    </div>
+
+    <div class="form-group mb-3 me-2 w-50">
+      <%= f.label :last_name, "Priezvisko" %>
+      <%= f.text_field :last_name, autocomplete: "family-name", class: "form-control", id:"last_name-#{f.object.entity_type}" %>
+    </div>
+  </div>
+
+  <div class="form-group mb-3">
+    <%= f.label :entity_name, "Názov entity" %> <br/>
+    <%= f.text_area :entity_name, autofocus: true, class: "form-control", id:"entity_name-#{f.object.entity_type}" %>
+  </div>
+
+  <hr>
+
+  <div class="d-flex">
+    <div class="form-group mb-3 me-2 w-50">
+      <%= f.label :street, "Ulica" %>
+      <%= f.text_field :street, class: "form-control", id:"street-#{f.object.entity_type}" %>
+    </div>
+
+    <div class="form-group mb-3 me-2 w-50">
+      <%= f.label :street_note, "Popisné číslo" %>
+      <%= f.text_field :street_note, class: "form-control", id:"street_note-#{f.object.entity_type}" %>
+    </div>
+  </div>
+
+  <div class="d-flex">
+    <div class="form-group mb-3 me-2 w-50">
+      <%= f.label :city, "Mesto" %>
+      <%= f.text_field :city, class: "form-control", id:"city-#{f.object.entity_type}" %>
+    </div>
+
+    <div class="form-group mb-3 me-2 w-50">
+      <%= f.label :postal_code, "PSČ" %>
+      <%= f.text_field :postal_code, class: "form-control", id:"postal_code-#{f.object.entity_type}" %>
+    </div>
+  </div>
+
+  <div class="form-group mb-3">
+    <%= f.label :country, "Krajina" %>
+    <%= f.text_field :country, class: "form-control", id:"country-#{f.object.entity_type}" %>
+  </div>
+  <%= f.hidden_field :entity_type %>
+</div>
