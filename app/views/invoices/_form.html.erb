@@ -1,69 +1,240 @@
 <div class="form-signin my-4 mx-auto w-75">
   <%= form_with(model: invoice) do |form| %>
-    <div class="d-flex">
-      <div class="form-group mb-3 me-2 w-50">
-        <%= form.label "IČO" %>
-        <%= form.text_field :ico, autofocus: true, class:"form-control"%>
+    <div class="container">
+      <div class="row">
+        <!-- Entities: SELLER/BUYER/TAX_REPRESENTATIVE -->
+        <%= form.label "Názov faktúry: " %>
+        <%= form.text_field :invoice_name, class: "form-control mb-3" %>
+
+        <% invoice.entities.each do |entity| %>
+          <div class="col-md-4">
+            <%= form.fields_for :entities, [entity] do |ff| %>
+              <h5><%= ff.object.entity_type %></h5>
+              <%= render 'entity', f: ff %>
+            <% end %>
+          </div>
+        <% end %>
       </div>
 
-      <div class="form-group mb-3 ms-2 w-50">
-        <%= form.label "DIČ" %>
-        <%= form.text_field :dic, autofocus: true, class:"form-control" %>
-      </div>
-    </div>
+      <hr>
 
-    <div class="d-flex">
-      <div class="form-group mb-3 me-2 w-50">
-          <%= form.label "Krstné meno" %>
-          <%= form.text_field :first_name, autocomplete: "given-name", class:"form-control"%>
+      <!-- Invoice -->
+      <div class="row">
+        <div class="col-md-12">
+
+          <%= form.label "Poradové číslo faktúry" %>
+          <%= form.text_field :invoice_number, class: "form-control mb-3" %>
+
+          <%= form.label "Dátum vystavenia faktúry" %>
+          <%= form.date_field :issue_date, class: "form-control mb-3" %>
+
+          <%= form.label "Dodací/Prepravný dátum" %>
+          <%= form.date_field :shipping_date, class: "form-control mb-3" %>
+
+          <%= form.label "Dátum splatnosti" %>
+          <%= form.date_field :due_date, class: "form-control mb-3" %>
+
+          <%= form.label "Údaje o dodanom novom dopravnom prostriedku" %>
+          <%= form.text_field :vehicle_information, class: "form-control mb-3" %>
+
+          <hr>
+
+          <%= form.label "Vyhotovenie faktúry odberateľom" %>
+          <%= form.check_box :self_issued_invoice, class: "form-check-input mb-3" %>
+
+          <%= form.label "Prenesenie daňovej povinnosti" %>
+          <%= form.check_box :tax_liability_shift, class: "form-check-input mb-3" %>
+
+          <hr>
+
+          <%= form.label "Úprava zdaňovania prirážky" %>
+          <%= form.text_field :tax_adjustment_type, {class: "form-control mb-3", placeholder: "prirážka: €"} %>
+
+          <%= form.label "druh dodaného tovaru" %>
+          <%= form.text_field :product_type, class: "form-control mb-3" %>
+
+          <%= form.label "Množstvo dodaného tovaru" %>
+          <%= form.number_field :product_quantity, {class: "form-control mb-3", placeholder: "ks"} %>
+
+          <%= form.label "Jednotková cena bez DPH" %>
+          <%= form.text_field :unit_price_without_tax, {class: "form-control mb-3", placeholder: "€"} %>
+
+          <%= form.label "Celková cena bez DPH" %>
+          <%= form.text_field :total_price_without_tax, {class: "form-control mb-3", placeholder: "€"} %>
+
+          <%= form.label "Sadzba DPH (percentuálna hodnota)" %>
+          <%= form.text_field :vat_rate_percentage, {class: "form-control mb-3", placeholder: "%" } %>
+
+          <%= form.label "Výška dane spolu v eurách" %>
+          <%= form.text_field :total_tax_amount_eur, {class: "form-control mb-3", placeholder: "€"} %>
+
+          <hr>
+
+          <%= form.fields_for :bank_detail do |bd| %>
+            <%= bd.label :bank_name, "Banka" %>
+            <%= bd.text_field :bank_name, {class: "form-control mb-3", placeholder: "priklad: Tatra Banka"} %>
+
+            <%= bd.label :iban, "IBAN" %>
+            <%= bd.text_field :iban, {class: "form-control mb-3", placeholder: "príklad: SK89 7500 0000 0000 1234 5671"} %>
+
+            <%= bd.label :swift, "SWIFT Kód" %>
+            <%= bd.text_field :swift, class: "form-control mb-3" %>
+
+            <%= bd.label :var_symbol, "Variabilný symbol" %>
+            <%= bd.text_field :var_symbol, class: "form-control mb-3" %>
+
+            <%= bd.label :konst_symbol, "Konštantný symbol" %>
+            <%= bd.text_field :konst_symbol, class: "form-control mb-3" %>
+          <% end %>
+
         </div>
-
-      <div class="form-group mb-3 me-2 w-50">
-          <%= form.label "Priezvisko" %>
-          <%= form.text_field :last_name, autocomplete: "family-name", class:"form-control" %>
-        </div>
-    </div>
-
-    <div class="form-group mb-3">
-      <%= form.label "Názov entity" %> <br />
-      <%= form.text_area :entity_name, autofocus: true, class:"form-control" %>
-    </div>
-
-    <hr>
-
-    <div class="d-flex">
-      <div class="form-group mb-3 me-2 w-50">
-        <%= form.label "Ulica" %>
-        <%= form.text_field :street, class:"form-control"%>
-      </div>
-
-      <div class="form-group mb-3 me-2 w-50">
-        <%= form.label "Popisné číslo" %>
-        <%= form.text_field :street_note, class:"form-control" %>
-      </div>
-    </div>
-
-    <div class="d-flex">
-      <div class="form-group mb-3 me-2 w-50">
-        <%= form.label "Mesto" %>
-        <%= form.text_field :city, class:"form-control"%>
-      </div>
-
-      <div class="form-group mb-3 me-2 w-50">
-        <%= form.label "PSČ" %>
-        <%= form.text_field :postal_code, class:"form-control" %>
       </div>
     </div>
 
     <div class="form-group mb-3">
-      <%= form.label "Krajina" %>
-      <%= form.text_field :country, class:"form-control" %>
+      <%= form.number_field :user_id, type: :hidden, class: "form-control", value: current_user.id %>
     </div>
 
-    <div class="form-group mb-3">
-      <%= form.number_field :user_id, type: :hidden, class:"form-control", value: current_user.id %>
-    </div>
-
-    <%= form.submit "Uložiť", class:"btn btn-lg btn-light my-auto"%>
+    <%= form.submit "Uložiť", class: "btn btn-lg btn-light my-auto" %>
   <% end %>
 </div>
+
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        $("#ico-seller").on("focusout", function (){
+            let value = $(this).val();
+
+            if(value != null && value !== "")
+            {
+                $.ajax({
+                    url: "http://localhost:3000/api/search",
+                    accepts: {
+                        text: "application/json"
+                    },
+                    data: { ico: value },
+                    type: "get"
+                }).done(function(responseData) {
+                    $("#first_name-seller").val(responseData['first_name']);
+                    $("#last_name-seller").val(responseData['last_name']);
+                    $("#dic-seller").val(responseData['dic']);
+                    $("#ic_dph-seller").val(responseData['ic_dph']);
+                    $("#entity_name-seller").val(responseData['entity_name']);
+
+                    const adress = responseData['addresses'][0];
+                    $("#street-seller").val(adress['street']);
+                    $("#postal_code-seller").val(adress['postal_code']);
+
+                    const street_notes = [];
+                    if(adress['building_number'] != null)
+                    {
+                        street_notes.push(adress['building_number'])
+                    }
+                    if(adress['reg_number'] != null)
+                    {
+                        street_notes.push(adress['reg_number'])
+                    }
+                    const street_note = street_notes.join('/');
+                    $("#street_note-seller").val(String(street_note));
+
+                    const municipality = adress['municipality'];
+                    $("#city-seller").val(municipality['name']);
+
+                    const country = adress['country'];
+                    $("#country-seller").val(country['name']);
+                }).fail(function() {
+                    console.log("Failed");
+                });
+            }
+        });
+
+        $("#ico-buyer").on("focusout", function (){
+            let value = $(this).val();
+
+            if(value != null && value !== "")
+            {
+                $.ajax({
+                    url: "http://localhost:3000/api/search",
+                    accepts: {
+                        text: "application/json"
+                    },
+                    data: { ico: value },
+                    type: "get"
+                }).done(function(responseData) {
+                    $("#first_name-buyer").val(responseData['first_name']);
+                    $("#last_name-buyer").val(responseData['last_name']);
+                    $("#dic-buyer").val(responseData['dic']);
+                    $("#ic_dph-buyer").val(responseData['ic_dph']);
+                    $("#entity_name-buyer").val(responseData['entity_name']);
+
+                    const adress = responseData['addresses'][0];
+                    $("#street-buyer").val(adress['street']);
+                    $("#postal_code-buyer").val(adress['postal_code']);
+
+                    const street_notes = [];
+                    if(adress['building_number'] != null)
+                    {
+                        street_notes.push(adress['building_number'])
+                    }
+                    if(adress['reg_number'] != null)
+                    {
+                        street_notes.push(adress['reg_number'])
+                    }
+                    const street_note = street_notes.join('/');
+                    $("#street_note-buyer").val(String(street_note));
+
+                    const municipality = adress['municipality'];
+                    $("#city-buyer").val(municipality['name']);
+
+                    const country = adress['country'];
+                    $("#country-buyer").val(country['name']);
+                }).fail(function() {
+                    console.log("Failed");
+                });
+            }
+        });
+
+        $("#ic_dph-tax_representative").on("focusout", function (){
+            let value = $(this).val();
+
+            if(value != null && value !== "")
+            {
+                $.ajax({
+                    url: "http://localhost:3000/api/tax_rep",
+                    accepts: {
+                        text: "application/json"
+                    },
+                    data: { ic_dph: value },
+                    type: "get"
+                }).done(function(responseData) {
+                    $("#first_name-tax_representative").val(responseData['first_name']);
+                    $("#last_name-tax_representative").val(responseData['last_name']);
+                    $("#entity_name-tax_representative").val(responseData['entity_name']);
+
+                    const adress = responseData['addresses'][0];
+                    $("#street-tax_representative").val(adress['street']);
+                    $("#postal_code-tax_representative").val(adress['postal_code']);
+
+                    const street_notes = [];
+                    if(adress['building_number'] != null)
+                    {
+                        street_notes.push(adress['building_number'])
+                    }
+                    if(adress['reg_number'] != null)
+                    {
+                        street_notes.push(adress['reg_number'])
+                    }
+                    const street_note = street_notes.join('/');
+                    $("#street_note-tax_representative").val(String(street_note));
+
+                    const municipality = adress['municipality'];
+                    $("#city-tax_representative").val(municipality['name']);
+
+                    const country = adress['country'];
+                    $("#country-tax_representative").val(country['name']);
+                }).fail(function() {
+                    console.log("Failed");
+                });
+            }
+        });
+    });
+</script>
