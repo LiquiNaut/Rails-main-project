@@ -3,57 +3,80 @@
     <div class="col-md-8">
       <div class="p-3 bg-white rounded">
         <div class="row">
-          <h2 class="text-uppercase text-dark fw-bold">Faktúra</h2>
+          <h2 class="text-uppercase text-dark fw-bold"><%= @invoice.invoice_name %></h2>
           <div class="col-md-6 text-dark text-start p-3">
-            <h5 class="text-uppercase">Odosielateľ</h5>
-            <div class="billed"><span class="ml-1"><%= @invoice.full_name %></span></div>
-            <div class="billed"><span class="ml-1"><%= @invoice.created_at %></span></div>
+            <h5 class="text-uppercase">Seller</h5>
+            <div class="billed"><span class="ml-1"><%= @invoice.seller.full_name %></span></div>
+            <div class="billed"><span class="ml-1"><%= @invoice.seller.street %>   <%= @invoice.seller.street_note %></span></div>
+            <div class="billed"><span class="ml-1"><%= @invoice.seller.postal_code %>    <%= @invoice.seller.city %></span></div>
+            <div class="billed"><span class="ml-1"><%= @invoice.seller.country %></span></div>
+            <div class="billed"><span class="ml-1">IČO: <%= @invoice.seller.ico %></span></div>
+            <div class="billed"><span class="ml-1">DIČ: <%= @invoice.seller.dic %></span></div>
+            <div class="billed"><span class="ml-1">IČ_DPH: <%= @invoice.seller.ic_dph %></span></div>
           </div>
           <div class="col-md-6 text-dark text-start p-3">
-            <h5 class="text-uppercase">Prijímateľ</h5>
-            <div class="billed"><span class="ml-1"><%= @invoice.full_name %></span></div>
-            <div class="billed"><span class="ml-1"><%= @invoice.created_at %></span></div>
-        </div>
-        <div class="mt-3">
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-              <tr>
-                <th>Product</th>
-                <th>Unit</th>
-                <th>Price</th>
-                <th>Total</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>Custom oil painting (24 X 36 in.)</td>
-                <td>10</td>
-                <td>34</td>
-                <td>340</td>
-              </tr>
-              <tr>
-                <td>Digital illustraion paint(8.5 X 11 in.)</td>
-                <td>12</td>
-                <td>50</td>
-                <td>600</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td>Total</td>
-                <td>940</td>
-              </tr>
-              </tbody>
-            </table>
+            <h5 class="text-uppercase">Buyer</h5>
+            <div class="billed"><span class="ml-1"><%= @invoice.buyer.entity_name %></span></div>
+            <div class="billed"><span class="ml-1"><%= @invoice.buyer.street %>   <%= @invoice.seller.street_note %></span></div>
+            <div class="billed"><span class="ml-1"><%= @invoice.buyer.postal_code %>    <%= @invoice.seller.city %></span></div>
+            <div class="billed"><span class="ml-1"><%= @invoice.buyer.country %></span></div>
+            <div class="billed"><span class="ml-1">IČO: <%= @invoice.buyer.ico %></span></div>
+            <div class="billed"><span class="ml-1">DIČ: <%= @invoice.buyer.dic %></span></div>
+            <div class="billed"><span class="ml-1">IČ_DPH: <%= @invoice.buyer.ic_dph %></span></div>
           </div>
-        </div>
-        <div class="text-right mb-3 d-flex justify-content-center">
-          <%= link_to "Upraviť", edit_invoice_path(@invoice), class:"btn btn-light btn-sm mr-5" %>
-          <%= button_to "Vymazať", @invoice, method: :delete, form: { data: { turbo_confirm: "Si si istý?" } }, class:"btn btn-danger btn-sm mr-5" %>
+          <div class="col-md-6 text-dark text-start p-3">
+            <div class="billed"><span class="ml-1">Dátum vystavenia: <%= @invoice.issue_date.strftime('%d.%m.%Y') %></span></div>
+            <div class="billed"><span class="ml-1">Dátum dodania: <%= @invoice.shipping_date.strftime('%d.%m.%Y') %></span></div>
+            <div class="billed"><span class="ml-1">Dátum splatnosti: <%= @invoice.due_date.strftime('%d.%m.%Y') %></span></div>
+          </div>
+          <div class="col-md-6 text-dark text-start p-3">
+            <div class="billed"><span class="ml-1">Banka: <%= @invoice.bank_detail.bank_name %></span></div>
+            <div class="billed"><span class="ml-1">IBAN: <%= @invoice.bank_detail.iban %></span></div>
+            <div class="billed"><span class="ml-1">SWIFT: <%= @invoice.bank_detail.swift %></span></div>
+            <div class="billed"><span class="ml-1">Variabilný symbol: <%= @invoice.bank_detail.var_symbol %></span></div>
+            <div class="billed"><span class="ml-1">Konštantný symbol: <%= @invoice.bank_detail.konst_symbol %></span></div>
+          </div>
+          <div class="mt-3">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>Produkt/Služba</th>
+                  <th>Počet</th>
+                  <th>Cena bez dane</th>
+                  <th>Celková cena bez dane</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td><%= @invoice.product_type %></td>
+                  <td><%= @invoice.product_quantity %></td>
+                  <td><%= @invoice.unit_price_without_tax %></td>
+                  <td><%= @invoice.total_price_without_tax %></td>
+                </tr>
+                <tr>
+                  <td>Dane (v %)</td>
+                  <td><%= @invoice.vat_rate_percentage %></td>
+                  <td>Celková suma daní (v EUR)</td>
+                  <td><%= @invoice.total_tax_amount_eur %></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td><strong>Total s DPH</strong></td>
+                  <td><strong><%= @invoice.total_price_without_tax + @invoice.total_tax_amount_eur %> EUR</strong></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="text-right mb-3 d-flex justify-content-center">
+            <%= link_to "Späť", user_path(current_user), class:"btn btn-light me-2" %>
+            <%#= link_to "Upraviť", edit_invoice_path(@invoice), class: "btn btn-light btn-sm mr-5" %>
+            <%#= button_to "Vymazať", @invoice, method: :delete, form: { data: { turbo_confirm: "Si si istý?" } }, class: "btn btn-danger btn-sm mr-5" %>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </div>

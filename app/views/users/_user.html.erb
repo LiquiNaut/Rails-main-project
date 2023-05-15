@@ -1,34 +1,33 @@
 <div class="p-5 mb-4 text-light rounded-3 text-start">
   <div class="container-fluid py-5">
 
-    <%= render partial: "users/user_card", locals: {user: user}  %>
+    <%= render partial: "users/user_card", locals: { user: user } %>
 
     <p class="card-text">
-    <%= link_to "Upraviť profil", edit_user_registration_path, class:"btn btn-outline-warning" %>
-    <%= link_to "Vytvoriť faktúru", new_invoice_path, class:"btn btn-outline-dark" %>
+      <%= link_to "Upraviť profil", edit_user_registration_path, class: "btn btn-outline-warning" %>
+      <%= link_to "Vytvoriť faktúru", new_invoice_path, class: "btn btn-outline-dark" %>
     </p>
 
     <% if @user_invoices.length > 0 %>
       <table class="table text-light table-active">
         <thead>
         <tr>
-          <th scope="col"><%= "Meno" %></th>
-          <th scope="col"><%= "IČO" %></th>
-          <th scope="col"><%= "DIČ" %></th>
+          <th scope="col"><%= "Názov faktrúry" %></th>
+          <th scope="col"><%= "Číslo faktúry" %></th>
           <th scope="col"><%= "Akcie" %></th>
+          <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
         <% @user_invoices.each do |invoice| %>
           <tr class="text-light">
-            <td><%= "#{invoice&.full_name}" %></td>
-            <td><%= "#{invoice&.ico}" %></td>
-            <td><%= "#{invoice&.dic}" %></td>
+            <td><%= "#{invoice&.invoice_name}" %></td>
+            <td><%= "#{invoice&.invoice_number}" %></td>
             <td>
-              <%= link_to "Zobraziť", invoice_path(invoice), class:"btn btn-light btn-sm" %>
-              <%= link_to "Upraviť", edit_invoice_path(invoice), class:"btn btn-warning btn-sm" %>
-              <%= button_to "Vymazať", invoice, method: :delete, form: { data: { turbo_confirm: "Si si istý?" } }, class:"btn btn-danger me-3 btn-sm" %></div>
+              <%= link_to "Zobraziť", invoice_path(invoice), class: "btn btn-light btn-sm" %>
+              <%= link_to "Upraviť", edit_invoice_path(invoice), class: "btn btn-warning btn-sm" %>
             </td>
+            <td><%= button_to "Vymazať", invoice, method: :delete, form: { data: { turbo_confirm: "Si si istý?" } }, class: "btn btn-danger btn-sm" %></td>
           </tr>
         <% end %>
 
