@@ -4,7 +4,7 @@
       <div class="row">
         <!-- Entities: SELLER/BUYER/TAX_REPRESENTATIVE -->
         <%= form.label "Názov faktúry: " %>
-        <%= form.text_field :invoice_name, class: "form-control mb-3" %>
+        <%= form.text_field :invoice_name, class: "form-control mb-3", value: sanitize(invoice.invoice_name) %>
 
         <%= form.label "Vyhľadanie osoby alebo firmy podľa mena: " %>
         <%= form.text_field :search_entity_text, class: "select2-enable form-control mb-3" %>
@@ -26,11 +26,11 @@
       <div class="row">
         <div class="col-md-12">
 
-          <%= form.label "Poradové číslo faktúry" %>
-          <%= form.text_field :invoice_number, class: "form-control mb-3" %>
+          <%= form.label "Číslo faktúry" %>
+          <%= form.text_field :invoice_number, class: "form-control mb-3", value: sanitize(invoice.invoice_number) %>
 
           <%= form.label "Dátum vystavenia faktúry" %>
-          <%= form.date_field :issue_date, class: "form-control mb-3" %>
+          <%= form.date_field :issue_date, class: "form-control mb-3"%>
 
           <%= form.label "Dodací/Prepravný dátum" %>
           <%= form.date_field :shipping_date, class: "form-control mb-3" %>
@@ -39,7 +39,7 @@
           <%= form.date_field :due_date, class: "form-control mb-3" %>
 
           <%= form.label "Údaje o dodanom novom dopravnom prostriedku" %>
-          <%= form.text_field :vehicle_information, class: "form-control mb-3" %>
+          <%= form.text_field :vehicle_information, class: "form-control mb-3", value: sanitize(invoice.vehicle_information) %>
 
           <hr>
 
@@ -52,10 +52,10 @@
           <hr>
 
           <%= form.label "Úprava zdaňovania prirážky" %>
-          <%= form.text_field :tax_adjustment_type, {class: "form-control mb-3", placeholder: "prirážka: €"} %>
+          <%= form.text_field :tax_adjustment_type, {class: "form-control mb-3", placeholder: "prirážka: €", value: sanitize(invoice.tax_adjustment_type)} %>
 
           <%= form.label "druh dodaného tovaru" %>
-          <%= form.text_field :product_type, class: "form-control mb-3" %>
+          <%= form.text_field :product_type, class: "form-control mb-3", value: sanitize(invoice.product_type) %>
 
           <%= form.label "Množstvo dodaného tovaru" %>
           <%= form.number_field :product_quantity, {class: "form-control mb-3", placeholder: "ks"} %>
@@ -67,7 +67,7 @@
           <%= form.text_field :total_price_without_tax, {class: "form-control mb-3", placeholder: "€"} %>
 
           <%= form.label "Sadzba DPH (percentuálna hodnota)" %>
-          <%= form.text_field :vat_rate_percentage, {class: "form-control mb-3", placeholder: "%" } %>
+          <%= form.text_field :vat_rate_percentage, {class: "form-control mb-3", placeholder: "%"} %>
 
           <%= form.label "Výška dane spolu v eurách" %>
           <%= form.text_field :total_tax_amount_eur, {class: "form-control mb-3", placeholder: "€"} %>
@@ -76,19 +76,19 @@
 
           <%= form.fields_for :bank_detail do |bd| %>
             <%= bd.label :bank_name, "Banka" %>
-            <%= bd.text_field :bank_name, {class: "form-control mb-3", placeholder: "priklad: Tatra Banka"} %>
+            <%= bd.text_field :bank_name, {class: "form-control mb-3", placeholder: "priklad: Tatra Banka", value: sanitize(invoice.bank_detail.bank_name)} %>
 
             <%= bd.label :iban, "IBAN" %>
-            <%= bd.text_field :iban, {class: "form-control mb-3", placeholder: "príklad: SK89 7500 0000 0000 1234 5671"} %>
+            <%= bd.text_field :iban, {class: "form-control mb-3", placeholder: "príklad: SK89 7500 0000 0000 1234 5671", value: sanitize(invoice.bank_detail.iban)} %>
 
             <%= bd.label :swift, "SWIFT Kód" %>
-            <%= bd.text_field :swift, class: "form-control mb-3" %>
+            <%= bd.text_field :swift, class: "form-control mb-3", value: sanitize(invoice.bank_detail.swift) %>
 
             <%= bd.label :var_symbol, "Variabilný symbol" %>
-            <%= bd.text_field :var_symbol, class: "form-control mb-3" %>
+            <%= bd.text_field :var_symbol, class: "form-control mb-3", value: sanitize(invoice.bank_detail.var_symbol) %>
 
             <%= bd.label :konst_symbol, "Konštantný symbol" %>
-            <%= bd.text_field :konst_symbol, class: "form-control mb-3" %>
+            <%= bd.text_field :konst_symbol, class: "form-control mb-3", value: sanitize(invoice.bank_detail.konst_symbol) %>
           <% end %>
 
         </div>
@@ -269,17 +269,17 @@
             var data = e.params.data.data;
             console.log(data);
 
-            $("#first_name-seller").val(data.first_name);
-            $("#last_name-seller").val(data.last_name);
-            $("#ico-seller").val(data.ico);
-            $("#dic-seller").val(data.dic);
-            $("#ic_dph-seller").val(data.ic_dph);
-            $("#entity_name-seller").val(data.entity_name);
+            $("#first_name-buyer").val(data.first_name);
+            $("#last_name-buyer").val(data.last_name);
+            $("#ico-buyer").val(data.ico);
+            $("#dic-buyer").val(data.dic);
+            $("#ic_dph-buyer").val(data.ic_dph);
+            $("#entity_name-buyer").val(data.entity_name);
 
             if (data.addresses && data.addresses.length > 0) {
                 const adress = data.addresses[0];
-                $("#street-seller").val(adress.street);
-                $("#postal_code-seller").val(adress.postal_code);
+                $("#street-buyer").val(adress.street);
+                $("#postal_code-buyer").val(adress.postal_code);
 
                 const street_notes = [];
                 if(adress.building_number != null)
@@ -291,13 +291,13 @@
                     street_notes.push(adress.reg_number)
                 }
                 const street_note = street_notes.join('/');
-                $("#street_note-seller").val(String(street_note));
+                $("#street_note-buyer").val(String(street_note));
 
                 const municipality = adress.municipality;
-                $("#city-seller").val(municipality.name);
+                $("#city-buyer").val(municipality.name);
 
                 const country = adress.country;
-                $("#country-seller").val(country.name);
+                $("#country-buyer").val(country.name);
             }
         });
 

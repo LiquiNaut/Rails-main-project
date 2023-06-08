@@ -1,4 +1,4 @@
-<h1 class="text-center"> <%= t(:'devise.login') %> </h1>
+<h1 class="text-center"> <%= sanitize(t(:'devise.login')) %> </h1>
 
 <div class="form-signin my-4 mx-auto w-50">
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
