@@ -3,7 +3,12 @@
     <div class="col-md-8">
       <div class="p-3 bg-white rounded">
         <div class="row">
-          <h2 class="text-uppercase text-dark fw-bold"><%= @invoice.invoice_name %></h2>
+          <div class="col-6 text-start">
+            <h2 class="text-uppercase text-dark fw-bold"><%= @invoice.invoice_name %></h2>
+          </div>
+          <div class="col-6 text-end">
+            <p class="text-uppercase text-dark fw-bold">Číslo faktúry: <%= @invoice.invoice_number %></p>
+          </div>
           <div class="col-md-6 text-dark text-start p-3">
             <h5 class="text-uppercase">Seller</h5>
             <div class="billed"><span class="ml-1"><%= @invoice.seller.full_name %></span></div>

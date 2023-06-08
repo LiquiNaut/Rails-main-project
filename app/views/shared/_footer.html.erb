@@ -1,7 +1,12 @@
 <div class="d-flex justify-content-center align-items-center mb-3">
   <div>
     <% if user_signed_in? %>
-      <b><%= current_user.email %></b>, welcome!
+      Vitaj <b><%= current_user.email %></b>
     <% end %>
+    <p>Copyright © Gašparovič Boris</p>
+    <p>
+      V prípade otázok ma môžte kontaktovať na:
+      <a href="mailto:gasparovicboris@gmail.com">gasparovicboris@gmail.com</a>
+    </p>
   </div>
 </div>
