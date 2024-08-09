@@ -1,24 +1,3 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+This repository contains the frontend part of the bachelor's project, which serves as the user interface for the application. The frontend is developed using the Ruby on Rails framework and is designed to integrate with the backend API (BP-API) for data retrieval and manipulation. Additionally, the project utilizes the `sprockets-rails`, `devise`, and `select2-rails` gems.
