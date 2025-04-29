@@ -1,7 +1,8 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.1.3"
+# 3.1.3
+ruby "3.3.6"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.0.4", ">= 7.0.4.3"
@@ -30,6 +31,15 @@ gem "jbuilder"
 # gem na vsetko ohladom prihlasovania a registracie na web
 gem 'devise'
 
+# gem na vsetko ohladom LLM
+gem 'ruby_llm', '~> 1.2.0'
+
+# https://github.com/alexrudall/ruby-openai
+# gem 'ruby-openai'
+
+# gem for managing environment variables
+gem 'dotenv-rails', groups: [:development, :test]
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 
@@ -39,7 +49,7 @@ gem 'devise'
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
-#html to PDF
+# HTML to PDF
 # gem 'wicked_pdf'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

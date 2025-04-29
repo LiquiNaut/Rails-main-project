@@ -1,0 +1,136 @@
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+      <div class="card shadow h-100">
+        <div class="card-header bg-primary text-white py-2">
+          <h3 class="mb-0">Chat s AI</h3>
+        </div>
+        <div class="card-body d-flex flex-column p-3" style="min-height: 350px;">
+          <div id="chat-messages" class="flex-grow-1 mb-3" style="overflow-y: auto;">
+            <div class="system-message">
+              <p>Vitajte v chate! Ako vám môžem pomôcť?</p>
+            </div>
+          </div>
+          <div class="mt-auto">
+            <div class="input-group mb-2">
+              <input type="text" id="prompt-input" class="form-control" placeholder="Napíšte správu...">
+              <button id="send-button" class="btn btn-primary">Odoslať</button>
+            </div>
+            <div class="input-group">
+              <input type="file" id="image-upload" class="form-control" accept="image/*">
+              <label class="input-group-text" for="image-upload">Nahrať obrázok</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatMessages = document.getElementById('chat-messages');
+        const promptInput = document.getElementById('prompt-input');
+        const sendButton = document.getElementById('send-button');
+        const imageUpload = document.getElementById('image-upload');
+        let imageData = null;
+
+        sendButton.addEventListener('click', sendMessage);
+        promptInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    imageData = reader.result;
+                    // Show preview or indicator that image is loaded
+                    addMessage('system', 'Obrázok bol nahraný a bude odoslaný s ďalšou správou.');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function sendMessage() {
+            const prompt = promptInput.value.trim();
+            if (!prompt && !imageData) return;
+
+            // Add a user message to chat
+            addMessage('user', prompt);
+            promptInput.value = '';
+
+            // Prepare request data
+            const requestData = {
+                prompt: prompt,
+                image: imageData
+            };
+
+            // Clear image data after sending
+            const hadImage = !!imageData;
+            imageData = null;
+            if (hadImage) {
+                imageUpload.value = '';
+            }
+
+            // Send request to backend
+            fetch('<%= chat_ask_path %>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify(requestData)
+            })
+              .then(response => response.json())
+              .then(data => {
+                  addMessage('ai', data.response);
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  addMessage('system', 'Nastala chyba pri komunikácii s AI.');
+              });
+        }
+
+        function addMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${sender}-message mb-3`;
+
+            const messagePara = document.createElement('p');
+            // For user messages, align to right, for AI messages align to left
+            messagePara.className = sender === 'user' ? 'text-end' : 'text-start';
+
+            // For AI responses, use text-align: left to ensure text starts from the left edge
+            const spanClass = sender === 'user'
+              ? 'bg-light p-2 rounded d-inline-block'
+              : 'bg-primary text-white p-2 rounded d-inline-block';
+
+            messagePara.innerHTML = `<span class="${spanClass}">${text}</span>`;
+
+            messageDiv.appendChild(messagePara);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    });
+</script>
+
+<style>
+    .user-message p span {
+        border-radius: 15px 15px 0 15px !important;
+        max-width: 80%;
+        text-align: right;
+    }
+    .ai-message p span {
+        border-radius: 15px 15px 15px 0 !important;
+        max-width: 80%;
+        text-align: left;
+    }
+    .system-message p {
+        color: #6c757d;
+        text-align: center;
+        font-style: italic;
+    }
+</style>
