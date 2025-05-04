@@ -11,10 +11,13 @@ class ChatController < ApplicationController
 
   def ask
     user_message = params[:prompt] || params[:message]
-    # image_data = params[:image]
 
     session[:chat_history] ||= []
     session[:chat_history] << { role: 'user', content: user_message }
+
+    detect_intent = IntentClassifier.classify(user_message)
+    Rails.logger.info "Správa: #{user_message.inspect}, Detekovaný zámer: #{detect_intent}"
+
 
     chat = RubyLLM.chat
     begin

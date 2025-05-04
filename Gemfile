@@ -5,40 +5,44 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby "3.3.6"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.0.4", ">= 7.0.4.3"
+# gem "rails", "~> 7.0.4", ">= 7.0.4.3"
+gem "rails", "~> 8.0", ">= 8.0.2"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
 # Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
+gem "pg", "~> 1.5.9"
 
 # Use the Puma web server [https://github.com/puma/puma]
-gem "puma", "~> 5.0"
+gem "puma", "~> 6.6.0"
 
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem "importmap-rails"
+gem "importmap-rails", "~> 2.1.0"
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
+gem "turbo-rails", "~> 2.0.13"
 
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails"
+gem "stimulus-rails", "~> 1.2.1"
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
+gem "jbuilder", "~> 2.13.0"
 
 # gem na vsetko ohladom prihlasovania a registracie na web
-gem 'devise'
+gem "devise", "~> 4.9.3"
 
 # gem na vsetko ohladom LLM
 gem 'ruby_llm', '~> 1.2.0'
+
+# Ruby's built-in Vector class for embeddings
+gem 'matrix'
 
 # https://github.com/alexrudall/ruby-openai
 # gem 'ruby-openai'
 
 # gem for managing environment variables
-gem 'dotenv-rails', groups: [:development, :test]
+gem "dotenv-rails", "~> 3.1.8", groups: [:development, :test]
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
@@ -59,9 +63,9 @@ gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 gem "bootsnap", require: false
 
 # Select2
-gem 'select2-rails'
+gem "select2-rails", "~> 4.0.13"
 
-gem "font-awesome-sass", "~> 6.4.0"
+gem "font-awesome-sass", "~> 6.7.2"
 # Use Sass to process CSS
 # gem "sassc-rails"
 
