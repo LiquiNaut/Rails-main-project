@@ -1,8 +1,7 @@
 require 'matrix'
 require 'ruby_llm'
 
-# Centroidy sa vypočítajú raz pri štarte aplikácie.
-module IntentClassifier
+module XIntentClassifier
 
   CLASS_EXAMPLES = {
     sql_query: [
@@ -25,17 +24,15 @@ module IntentClassifier
     vector_1 = Vector.elements(vec_a)
     vector_2 = Vector.elements(vec_b)
     norm_product = vector_1.norm * vector_2.norm
-    return 0.0 if norm_product.zero? # Vyhneme sa deleniu nulou
+    return 0.0 if norm_product.zero?
 
     vector_1.inner_product(vector_2) / norm_product
   rescue ArgumentError => e
       Rails.logger.error "Chyba pri výpočte kosínusovej podobnosti: #{e.message}"
-      0.0 # Vrátime 0.0 v prípade chyby (napr. nezhodné dimenzie)
+      0.0
   end
 
-  # 3) Generovanie centroidných embeddings pre každú triedu
-  # Toto sa spustí len raz pri inicializácii aplikácie.
-  Rails.logger.info "IntentClassifier: Začínam výpočet centroidov..."
+  Rails.logger.info "XIntentClassifier: Začínam výpočet centroidov..."
   CENTROIDS = CLASS_EXAMPLES.transform_values do |examples|
     begin
       vectors = examples.map do |text|
@@ -45,7 +42,7 @@ module IntentClassifier
 
       # Odstránenie prípadných nil hodnôt (ak embedding zlyhal)
       vectors.compact!
-      next nil if vectors.empty? # Ak žiadny embedding nebol úspešný
+      next nil if vectors.empty?
 
       dim = vectors.first.size
       centroid = Array.new(dim, 0.0)
@@ -53,43 +50,40 @@ module IntentClassifier
       centroid.map! { |sum| sum / vectors.size.to_f }
       centroid
     rescue RubyLLM::Error => e
-      Rails.logger.error "IntentClassifier: Nepodarilo sa získať embedding pre príklad: #{e.message}"
+      Rails.logger.error "XIntentClassifier: Nepodarilo sa získať embedding pre príklad: #{e.message}"
       nil
     rescue => e
-       Rails.logger.error "IntentClassifier: Neočakávaná chyba pri spracovaní príkladov: #{e.message}"
+       Rails.logger.error "XIntentClassifier: Neočakávaná chyba pri spracovaní príkladov: #{e.message}"
        nil
     end
-  end.compact # Odstránime triedy, pre ktoré sa nepodarilo vypočítať centroid
+  end.compact
 
   if CENTROIDS.empty?
-      Rails.logger.warn "IntentClassifier: Nepodarilo sa vypočítať žiadne centroidy!"
+      Rails.logger.warn "XIntentClassifier: Nepodarilo sa vypočítať žiadne centroidy!"
   else
-      Rails.logger.info "IntentClassifier: Centroidy úspešne vypočítané pre zámery: #{CENTROIDS.keys.join(', ')}"
+      Rails.logger.info "XIntentClassifier: Centroidy úspešne vypočítané pre zámery: #{CENTROIDS.keys.join(', ')}"
   end
 
   def self.classify(text)
-    # Skontrolujeme, či máme nejaké centroidy na porovnanie
-    return :general_chat if CENTROIDS.empty? # Ak nemáme centroidy, vrátime predvolený zámer
-    return :general_chat if text.nil? || text.strip.empty? # Prázdny vstup považujeme za všeobecný chat
+    return :general_chat if CENTROIDS.empty?
+    return :general_chat if text.nil? || text.strip.empty?
 
     begin
       input_vec = RubyLLM.embed(text).vectors
-      return :general_chat if input_vec.nil? || input_vec.empty? # Ak embedding zlyhá
+      return :general_chat if input_vec.nil? || input_vec.empty?
 
-      # Vypočítame podobnosť ku každému centroidu
       scores = CENTROIDS.transform_values do |centroid|
         cosine_similarity(input_vec, centroid)
       end
 
-      # Vyberieme triedu s najvyššou podobnosťou
       best_match = scores.max_by { |_cls, sim| sim }
       best_match ? best_match[0] : :general_chat
 
     rescue RubyLLM::Error => e
-      Rails.logger.error "IntentClassifier: Chyba pri získavaní embeddingu pre vstupný text: #{e.message}"
+      Rails.logger.error "XIntentClassifier: Chyba pri získavaní embeddingu pre vstupný text: #{e.message}"
       :general_chat
     rescue => e
-      Rails.logger.error "IntentClassifier: Chyba pri klasifikácii textu: #{e.message}"
+      Rails.logger.error "XIntentClassifier: Chyba pri klasifikácii textu: #{e.message}"
       :general_chat
     end
   end
