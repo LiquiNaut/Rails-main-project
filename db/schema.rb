@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_29_094109) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_06_221230) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "bank_details", force: :cascade do |t|
     t.string "bank_name"
@@ -24,6 +24,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_29_094109) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["invoice_id"], name: "index_bank_details_on_invoice_id"
+  end
+
+  create_table "chats", force: :cascade do |t|
+    t.string "model_id"
+    t.bigint "user_id", null: false
+    t.string "role", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_chats_on_user_id"
   end
 
   create_table "entities", force: :cascade do |t|
@@ -67,6 +77,35 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_29_094109) do
     t.index ["user_id"], name: "index_invoices_on_user_id"
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.bigint "chat_id", null: false
+    t.bigint "user_id", null: false
+    t.string "role", null: false
+    t.text "content", null: false
+    t.string "model_id"
+    t.integer "input_tokens"
+    t.integer "output_tokens"
+    t.bigint "tool_call_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_messages_on_chat_id"
+    t.index ["tool_call_id"], name: "index_messages_on_tool_call_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "tool_calls", force: :cascade do |t|
+    t.bigint "message_id", null: false
+    t.string "tool_call_id", null: false
+    t.string "tool_name", null: false
+    t.jsonb "arguments", default: {}
+    t.jsonb "output", default: {}
+    t.boolean "success", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_tool_calls_on_message_id"
+    t.index ["tool_call_id"], name: "index_tool_calls_on_tool_call_id", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -80,6 +119,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_29_094109) do
   end
 
   add_foreign_key "bank_details", "invoices"
+  add_foreign_key "chats", "users"
   add_foreign_key "entities", "invoices"
   add_foreign_key "invoices", "users"
+  add_foreign_key "messages", "chats"
+  add_foreign_key "messages", "users"
+  add_foreign_key "tool_calls", "messages"
 end
