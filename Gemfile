@@ -35,7 +35,7 @@ gem "jbuilder", "~> 2.13.0"
 gem "devise", "~> 4.9.3"
 
 # gem na vsetko ohladom LLM
-gem 'ruby_llm', '~> 1.2.0'
+gem 'ruby_llm', '~> 1.13'
 
 # Ruby's built-in Vector class for embeddings
 gem 'matrix'

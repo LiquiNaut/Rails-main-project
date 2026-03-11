@@ -1,9 +1,9 @@
 class Message < ApplicationRecord
   # Provides methods like tool_call?, tool_result?
-  acts_as_message # Assumes Chat and ToolCall model names
+  acts_as_message
 
   belongs_to :chat
-  belongs_to :user
+  belongs_to :user, optional: true
   belongs_to :tool_call, optional: true
 
   validates :role, presence: true
