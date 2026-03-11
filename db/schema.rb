@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_06_221230) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_11_194910) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -27,12 +27,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_06_221230) do
   end
 
   create_table "chats", force: :cascade do |t|
-    t.string "model_id"
+    t.string "model_id_string"
     t.bigint "user_id", null: false
-    t.string "role", null: false
-    t.text "content", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "model_id"
+    t.index ["model_id"], name: "index_chats_on_model_id"
     t.index ["user_id"], name: "index_chats_on_user_id"
   end
 
@@ -79,18 +79,45 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_06_221230) do
 
   create_table "messages", force: :cascade do |t|
     t.bigint "chat_id", null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.string "role", null: false
     t.text "content", null: false
-    t.string "model_id"
+    t.string "model_id_string"
     t.integer "input_tokens"
     t.integer "output_tokens"
     t.bigint "tool_call_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "model_id"
+    t.integer "cached_tokens"
+    t.integer "cache_creation_tokens"
+    t.json "content_raw"
     t.index ["chat_id"], name: "index_messages_on_chat_id"
+    t.index ["model_id"], name: "index_messages_on_model_id"
     t.index ["tool_call_id"], name: "index_messages_on_tool_call_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "models", force: :cascade do |t|
+    t.string "model_id", null: false
+    t.string "name", null: false
+    t.string "provider", null: false
+    t.string "family"
+    t.datetime "model_created_at"
+    t.integer "context_window"
+    t.integer "max_output_tokens"
+    t.date "knowledge_cutoff"
+    t.jsonb "modalities", default: {}
+    t.jsonb "capabilities", default: []
+    t.jsonb "pricing", default: {}
+    t.jsonb "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["capabilities"], name: "index_models_on_capabilities", using: :gin
+    t.index ["family"], name: "index_models_on_family"
+    t.index ["modalities"], name: "index_models_on_modalities", using: :gin
+    t.index ["provider", "model_id"], name: "index_models_on_provider_and_model_id", unique: true
+    t.index ["provider"], name: "index_models_on_provider"
   end
 
   create_table "tool_calls", force: :cascade do |t|
@@ -119,10 +146,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_06_221230) do
   end
 
   add_foreign_key "bank_details", "invoices"
+  add_foreign_key "chats", "models"
   add_foreign_key "chats", "users"
   add_foreign_key "entities", "invoices"
   add_foreign_key "invoices", "users"
   add_foreign_key "messages", "chats"
-  add_foreign_key "messages", "users"
+  add_foreign_key "messages", "models"
   add_foreign_key "tool_calls", "messages"
 end
