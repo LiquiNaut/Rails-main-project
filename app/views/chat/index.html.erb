@@ -1,4 +1,22 @@
-<div class="container-fluid py-2 chat-page-layout"
+<% content_for :body_class, "chat-page" %>
+
+<% content_for :head do %>
+  <style>
+    body.chat-page { overflow: hidden; }
+    body.chat-page main.container {
+      flex: 1 1 0;
+      overflow: hidden;
+      margin: 0 !important;
+      padding: 4px !important;
+      max-width: 100% !important;
+      display: flex;
+      align-items: stretch;
+    }
+    body.chat-page footer { display: none; }
+  </style>
+<% end %>
+
+<div class="container-fluid h-100 py-1 chat-page-layout"
      data-controller="chat"
      data-chat-chat-ask-path-value="<%= chat_ask_path %>"
      data-chat-chat-id-value="<%= @chat_record&.id %>">
