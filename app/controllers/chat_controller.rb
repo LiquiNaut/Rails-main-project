@@ -93,9 +93,13 @@ class ChatController < ApplicationController
   private
 
   def extract_chart_data(chat_record)
+    last_user_msg = chat_record.messages.where(role: 'user').order(:created_at).last
+    return nil unless last_user_msg
+
     msg = chat_record.messages
                      .where(role: 'tool')
-                     .reorder(created_at: :desc) # ← reorder namiesto order
+                     .where('created_at > ?', last_user_msg.created_at)
+                     .reorder(created_at: :desc)
                      .find do |m|
                        next if m.content.blank?
 
@@ -109,6 +113,10 @@ class ChatController < ApplicationController
 
     return nil unless msg
 
-    JSON.parse(msg.content)
+    begin
+      JSON.parse(msg.content)
+    rescue StandardError
+      nil
+    end
   end
 end
