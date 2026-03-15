@@ -1,4 +1,8 @@
 import { Controller } from '@hotwired/stimulus';
+import { Chart, registerables } from 'chart.js';
+
+console.log('Chat controller file loaded');
+Chart.register(...registerables);
 
 // Connects to data-controller="chat"
 export default class extends Controller {
@@ -12,10 +16,26 @@ export default class extends Controller {
     this.isSending = false;
     this.scrollToBottom();
     this.inputTarget.focus();
+
+    this.boundRenderCharts = () => {
+      console.log('turbo:load fired, calling renderExistingCharts');
+      this.renderExistingCharts();
+    };
+    document.addEventListener('turbo:load', this.boundRenderCharts, { once: true });
+
+    // Fallback: if page already loaded (not Turbo navigation), render immediately
+    if (document.readyState === 'complete') {
+      console.log('Page already complete, rendering charts immediately');
+      this.renderExistingCharts();
+    }
   }
 
   disconnect() {
     console.log('Chat controller disconnected!');
+    if (this.boundRenderCharts) {
+      document.removeEventListener('turbo:load', this.boundRenderCharts);
+      this.boundRenderCharts = null;
+    }
   }
 
   sendMessage() {
@@ -182,8 +202,14 @@ export default class extends Controller {
   renderChart(chartData) {
     if (!this.hasMessagesTarget || !chartData?.chart_type) return;
 
+    // Remove any existing chart message before adding a new one
+    const existingChart = this.messagesTarget.querySelector('.chart-message');
+    if (existingChart) {
+      existingChart.remove();
+    }
+
     const messageDiv = document.createElement('div');
-    messageDiv.className = 'ai-message mb-3';
+    messageDiv.className = 'ai-message mb-3 chart-message';
 
     const canvasWrapper = document.createElement('div');
     canvasWrapper.style.cssText = [
@@ -204,78 +230,143 @@ export default class extends Controller {
     this.messagesTarget.appendChild(messageDiv);
     this.scrollToBottom();
 
-    import('chart.js')
-      .then(({ Chart, registerables }) => {
-        Chart.register(...registerables);
+    this.renderChartOnCanvas(canvas, chartData);
+  }
 
-        if (chartData.chart_type === 'cashflow_bar') {
-          new Chart(canvas, {
-            type: 'bar',
-            data: {
-              labels: chartData.labels,
-              datasets: chartData.datasets.map((d) => ({
-                label: d.label,
-                data: d.data,
-                backgroundColor: d.color + 'bb',
-                borderColor: d.color,
-                borderWidth: 1,
-              })),
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: { position: 'top' },
-                title: {
-                  display: true,
-                  text: chartData.title || 'Cashflow',
-                },
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: {
-                    callback: (v) => v.toLocaleString('sk-SK') + ' €',
-                  },
-                },
-              },
-            },
-          });
-        } else if (chartData.chart_type === 'income_pie') {
-          new Chart(canvas, {
-            type: 'doughnut',
-            data: {
-              labels: chartData.labels,
-              datasets: [
-                {
-                  data: chartData.data,
-                  backgroundColor: chartData.colors,
-                  borderWidth: 2,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: { position: 'right' },
-                title: {
-                  display: true,
-                  text: chartData.title || 'Príjmy podľa klienta',
-                },
-                tooltip: {
-                  callbacks: {
-                    label: (ctx) => ` ${ctx.label}: ${ctx.parsed.toLocaleString('sk-SK')} €`,
-                  },
-                },
-              },
-            },
-          });
+  renderExistingCharts() {
+    console.log('=== renderExistingCharts() called ===');
+    console.log('Has messagesTarget:', this.hasMessagesTarget);
+
+    if (!this.hasMessagesTarget) {
+      console.warn('ERROR: messagesTarget does not exist!');
+      return;
+    }
+
+    const chartElements = this.messagesTarget.querySelectorAll('[data-chart]');
+    console.log(`Found ${chartElements.length} [data-chart] elements`);
+
+    if (chartElements.length === 0) {
+      console.warn('No chart elements found in messagesTarget');
+      console.log(
+        'messagesTarget innerHTML preview:',
+        this.messagesTarget.innerHTML.substring(0, 200)
+      );
+      return;
+    }
+
+    chartElements.forEach((el, idx) => {
+      try {
+        console.log(`--- Processing chart element ${idx} ---`);
+        const rawJson = el.dataset.chart;
+        console.log(`Raw dataset.chart (first 100 chars): ${rawJson?.substring(0, 100)}`);
+
+        const chartData = JSON.parse(rawJson);
+        console.log(`Parsed chartData:`, chartData);
+
+        if (!chartData?.chart_type) {
+          console.warn(`Chart ${idx}: Missing chart_type`);
+          return;
         }
-      })
-      .catch((err) => {
-        console.error('Chart.js načítanie zlyhalo:', err);
-        canvasWrapper.innerHTML =
-          "<p class='text-danger small p-2'>Graf sa nepodarilo načítať.</p>";
-      });
+
+        console.log(`Chart ${idx}: chart_type = ${chartData.chart_type}`);
+        el.innerHTML = '';
+        el.style.cssText = [
+          'max-width: 560px',
+          'background: white',
+          'padding: 16px',
+          'border-radius: 8px',
+          'box-shadow: 0 1px 4px rgba(0,0,0,0.12)',
+          'display: inline-block',
+        ].join(';');
+
+        const canvas = document.createElement('canvas');
+        canvas.id = `chart-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        canvas.style.maxHeight = '300px';
+
+        el.appendChild(canvas);
+        console.log(`Created canvas with id: ${canvas.id}`);
+
+        this.renderChartOnCanvas(canvas, chartData);
+        console.log(`Chart ${idx} rendered successfully`);
+      } catch (err) {
+        console.error(`Chart ${idx} ERROR:`, err.message);
+        console.error(err);
+      }
+    });
+  }
+
+  renderChartOnCanvas(canvas, chartData) {
+    try {
+      if (chartData.chart_type === 'cashflow_bar') {
+        console.log('Creating cashflow_bar chart with data:', chartData);
+        new Chart(canvas, {
+          type: 'bar',
+          data: {
+            labels: chartData.labels,
+            datasets: chartData.datasets.map((d) => ({
+              label: d.label,
+              data: d.data,
+              backgroundColor: d.color + 'bb',
+              borderColor: d.color,
+              borderWidth: 1,
+            })),
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              title: {
+                display: true,
+                text: chartData.title || 'Cashflow',
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (v) => v.toLocaleString('sk-SK') + ' €',
+                },
+              },
+            },
+          },
+        });
+      } else if (chartData.chart_type === 'income_pie') {
+        console.log('Creating income_pie chart with data:', chartData);
+        new Chart(canvas, {
+          type: 'doughnut',
+          data: {
+            labels: chartData.labels,
+            datasets: [
+              {
+                data: chartData.data,
+                backgroundColor: chartData.colors,
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'right' },
+              title: {
+                display: true,
+                text: chartData.title || 'Príjmy podľa klienta',
+              },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => ` ${ctx.label}: ${ctx.parsed.toLocaleString('sk-SK')} €`,
+                },
+              },
+            },
+          },
+        });
+      } else {
+        console.warn(`Unknown chart type: ${chartData.chart_type}`);
+      }
+    } catch (err) {
+      console.error('Error in renderChartOnCanvas:', err.message);
+      console.error(err);
+    }
   }
 
   scrollToBottom() {
