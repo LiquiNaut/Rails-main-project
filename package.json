@@ -1,0 +1,12 @@
+{
+  "name": "rails-main-project",
+  "version": "1.0.0",
+  "description": "Rails main project with Prettier",
+  "devDependencies": {
+    "prettier": "^3.0.0"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  }
+}
