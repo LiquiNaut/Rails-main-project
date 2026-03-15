@@ -123,12 +123,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_11_194910) do
   create_table "tool_calls", force: :cascade do |t|
     t.bigint "message_id", null: false
     t.string "tool_call_id", null: false
-    t.string "tool_name", null: false
+    t.string "name", null: false
     t.jsonb "arguments", default: {}
-    t.jsonb "output", default: {}
-    t.boolean "success", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "thought_signature"
     t.index ["message_id"], name: "index_tool_calls_on_message_id"
     t.index ["tool_call_id"], name: "index_tool_calls_on_tool_call_id", unique: true
   end
