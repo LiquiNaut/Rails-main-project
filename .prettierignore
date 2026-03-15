@@ -1,0 +1,12 @@
+node_modules/
+*.log
+.git/
+vendor/
+tmp/
+log/
+storage/
+public/
+.bundle/
+db/
+coverage/
+.env
