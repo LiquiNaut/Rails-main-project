@@ -1,12 +1,12 @@
-<div class="container-fluid my-4"
+<div class="container-fluid py-2 chat-page-layout"
      data-controller="chat"
      data-chat-chat-ask-path-value="<%= chat_ask_path %>"
      data-chat-chat-id-value="<%= @chat_record&.id %>">
-  <div class="row">
+  <div class="row h-100">
 
     <!-- Sidebar so zoznamom chatov -->
-    <div class="col-md-3 col-lg-2">
-      <div class="card shadow">
+    <div class="col-md-3 col-lg-2 h-100">
+      <div class="card shadow h-100" style="overflow-y: auto;">
         <div class="card-header bg-primary text-white py-2">
           <strong>Konverzácie</strong>
         </div>
@@ -33,23 +33,44 @@
     </div>
 
     <!-- Hlavná plocha chatu -->
-    <div class="col-md-9 col-lg-10">
+    <div class="col-md-9 col-lg-10 h-100">
       <div class="card shadow h-100">
         <div class="card-header bg-primary text-white py-2">
           <h5 class="mb-0">Chat s AI</h5>
         </div>
-        <div class="card-body d-flex flex-column p-3" style="min-height: 450px;">
-          <div id="chat-messages" class="flex-grow-1 mb-3" style="overflow-y: auto;" data-chat-target="messages">
+        <div class="card-body d-flex flex-column p-3 h-100">
+          <div id="chat-messages" class="flex-grow-1 mb-3" style="overflow-y: auto; height: 0;" data-chat-target="messages">
             <% if @chat_history && @chat_history.any? %>
               <% @chat_history.each do |msg| %>
                 <% next if msg[:content].blank? || msg[:role] == 'system' %>
-                <div class="<%= msg[:role] == 'user' ? 'user' : 'ai' %>-message mb-3">
-                  <p class="<%= msg[:role] == 'user' ? 'text-end' : 'text-start' %>">
-                    <span class="<%= msg[:role] == 'user' ? 'bg-light' : 'bg-primary text-white' %> p-2 rounded d-inline-block">
-                      <%= sanitize msg[:content] %>
-                    </span>
-                  </p>
-                </div>
+                
+                <% if msg[:role] == 'tool' %>
+                  <% begin %>
+                    <% chart_data = JSON.parse(msg[:content]) %>
+                    <% if chart_data.is_a?(Hash) && chart_data['chart_type'] %>
+                      <!-- Tool message with chart data - will be rendered by renderExistingCharts() -->
+                      <div data-chart="<%= h(msg[:content]) %>"
+                           class="alert alert-light border small text-muted p-2"
+                           style="max-width: 500px;">
+                        Loading chart...
+                      </div>
+                    <% else %>
+                      <!-- Tool message without valid chart type: <%= chart_data.keys rescue "error" %> -->
+                    <% end %>
+                  <% rescue => e %>
+                    <!-- JSON Parse Error in tool message: <%= e.message %> -->
+                    <!-- Content snippet: <%= msg[:content].to_s.truncate(50) %> -->
+                  <% end %>
+                <% else %>
+                  <!-- Regular user/ai messages -->
+                  <div class="<%= msg[:role] == 'user' ? 'user' : 'ai' %>-message mb-3">
+                    <p class="<%= msg[:role] == 'user' ? 'text-end' : 'text-start' %>">
+                      <span class="<%= msg[:role] == 'user' ? 'bg-light' : 'bg-primary text-white' %> p-2 rounded d-inline-block">
+                        <%= sanitize msg[:content] %>
+                      </span>
+                    </p>
+                  </div>
+                <% end %>
               <% end %>
             <% else %>
               <div class="text-muted text-center mt-4">
