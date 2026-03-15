@@ -38,47 +38,77 @@ class ChatController < ApplicationController
     begin
       system_instructions = <<~SYS.strip
         Si priateľský asistent (FinanceGPT) pre správu faktúr.
-        Pri požiadavkách na zobrazenie dát z databázy použi nástroj 'sql_generator_tool' 
+        Pri požiadavkách na zobrazenie dát z databázy použi nástroj 'sql_generator_tool'
         a databázovú schému: #{SqlGeneratorTool.invoice_model_schema}.
-        Ak požiadavka nesúvisí so zobrazením dát z databázy, odpovedz priamo.
+        Pri požiadavkách na zobrazenie grafov použi nástroje 'cashflow_chart' alebo 'income_breakdown'.
+
+        DÔLEŽITÉ PRAVIDLÁ PRE GRAFY:
+        - Po zavolaní chart nástroja frontend AUTOMATICKY zobrazí interaktívny graf.
+        - NIKDY negeneruj obrázky, base64 dáta ani markdown obrázky (![...]).
+        - Po zavolaní chart nástroja napíš IBA krátky textový súhrn (max 2-3 vety s kľúčovými číslami).
+        - Nepopisuj štruktúru grafu, farby ani technické detaily.
+
+        Ak požiadavka nesúvisí so zobrazením dát z databázy ani s grafmi, odpovedz priamo.
       SYS
 
       chat_record
         .with_instructions(system_instructions, replace: true)
         .with_temperature(0.0)
         .with_tool(SqlGeneratorTool.new)
+        .with_tool(CashflowChartTool.new(current_user))
+        .with_tool(IncomeBreakdownTool.new(current_user))
 
       assistant_response = chat_record.ask(user_message, with: { max_tokens: 200 })
 
-      render json: { response: assistant_response.content }
-
+      chart_data = extract_chart_data(chat_record)
+      render json: { response: assistant_response.content, chart_data: chart_data }, status: :ok
     rescue ::SqlGeneratorTool::Error => e
       Rails.logger.error "Chyba pri generovaní SQL: #{e.message}\n#{e.backtrace.join("\n")}"
       render json: { response: "⚠️ Nastala chyba pri generovaní SQL dotazu: #{e.message}" }, status: :ok
-
     rescue RubyLLM::Error => e
       Rails.logger.error "Chyba pri komunikácii s LLM: #{e.message}\n#{e.backtrace.join("\n")}"
 
       user_facing_message = case e.message
-      when /quota|billing|exceeded/i
-        "⚠️ Prekročená kvóta OpenAI API. Skontroluj fakturáciu na platform.openai.com."
-      when /invalid_api_key|Unauthorized|authentication/i
-        "⚠️ Neplatný API kľúč. Skontroluj konfiguráciu aplikácie."
-      when /rate_limit|too many requests/i
-        "⚠️ Príliš veľa požiadaviek. Skúste to znova o chvíľu."
-      when /timeout|timed out/i
-        "⚠️ Požiadavka vypršala. Skúste to znova."
-      when /context_length|maximum context/i
-        "⚠️ Konverzácia je príliš dlhá. Začni novú konverzáciu."
-      else
-        "⚠️ Nastala chyba pri komunikácii s AI. Skúste to znova."
-      end
+                            when /quota|billing|exceeded/i
+                              '⚠️ Prekročená kvóta OpenAI API. Skontroluj fakturáciu na platform.openai.com.'
+                            when /invalid_api_key|Unauthorized|authentication/i
+                              '⚠️ Neplatný API kľúč. Skontroluj konfiguráciu aplikácie.'
+                            when /rate_limit|too many requests/i
+                              '⚠️ Príliš veľa požiadaviek. Skúste to znova o chvíľu.'
+                            when /timeout|timed out/i
+                              '⚠️ Požiadavka vypršala. Skúste to znova.'
+                            when /context_length|maximum context/i
+                              '⚠️ Konverzácia je príliš dlhá. Začni novú konverzáciu.'
+                            else
+                              '⚠️ Nastala chyba pri komunikácii s AI. Skúste to znova.'
+                            end
 
       render json: { response: user_facing_message }, status: :ok
-
-    rescue => e
+    rescue StandardError => e
       Rails.logger.error "Všeobecná chyba v ChatController#ask: #{e.message}\n#{e.backtrace.join("\n")}"
-      render json: { response: "⚠️ Nastala neočakávaná chyba. Skúste to znova." }, status: :ok
+      render json: { response: '⚠️ Nastala neočakávaná chyba. Skúste to znova.' }, status: :ok
     end
+  end
+
+  private
+
+  def extract_chart_data(chat_record)
+    msg = chat_record.messages
+                     .where(role: 'tool')
+                     .reorder(created_at: :desc) # ← reorder namiesto order
+                     .find do |m|
+                       next if m.content.blank?
+
+                       parsed = begin
+                         JSON.parse(m.content)
+                       rescue StandardError
+                         nil
+                       end
+                       parsed.is_a?(Hash) && parsed['chart_type'].present?
+                     end
+
+    return nil unless msg
+
+    JSON.parse(msg.content)
   end
 end

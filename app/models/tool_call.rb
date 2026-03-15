@@ -3,5 +3,5 @@ class ToolCall < ApplicationRecord
   acts_as_tool_call
 
   belongs_to :message
-  validates :tool_name, presence: true
+  validates :name, presence: true
 end
