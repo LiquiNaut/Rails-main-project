@@ -166,6 +166,8 @@ GEM
     minitest (5.18.0)
     msgpack (1.7.0)
     multipart-post (2.4.1)
+    neighbor (0.6.0)
+      activerecord (>= 7.1)
     net-http (0.9.1)
       uri (>= 0.11.1)
     net-imap (0.5.8)
@@ -348,6 +350,7 @@ DEPENDENCIES
   importmap-rails (~> 2.1.0)
   jbuilder (~> 2.13.0)
   matrix
+  neighbor (~> 0.4)
   pg (~> 1.5.9)
   puma (~> 6.6.0)
   rails (~> 8.0, >= 8.0.2)
