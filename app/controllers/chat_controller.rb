@@ -42,6 +42,12 @@ class ChatController < ApplicationController
         a databázovú schému: #{SqlGeneratorTool.invoice_model_schema}.
         Pri požiadavkách na zobrazenie grafov použi nástroje 'cashflow_chart' alebo 'income_breakdown'.
 
+        ROZHODOVACIA LOGIKA PRE NÁSTROJE:
+        - sql_generator: čísla, dátumy, súčty, filtrovanie podľa presných hodnôt
+        - semantic_search: popis obsahu, témy, kontext, synonymá, vyhľadávanie podľa zmyslu textu
+        - cashflow_chart: vizualizácia cashflow v čase
+        - income_breakdown: piechart rozdelenia príjmov podľa klienta
+
         DÔLEŽITÉ PRAVIDLÁ PRE GRAFY:
         - Po zavolaní chart nástroja frontend AUTOMATICKY zobrazí interaktívny graf.
         - NIKDY negeneruj obrázky, base64 dáta ani markdown obrázky (![...]).
@@ -55,6 +61,7 @@ class ChatController < ApplicationController
         .with_instructions(system_instructions, replace: true)
         .with_temperature(0.0)
         .with_tool(SqlGeneratorTool.new)
+        .with_tool(SemanticSearchTool.new)
         .with_tool(CashflowChartTool.new(current_user))
         .with_tool(IncomeBreakdownTool.new(current_user))
 
