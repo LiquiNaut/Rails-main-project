@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_11_194910) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_18_213141) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "vector"
 
   create_table "bank_details", force: :cascade do |t|
     t.string "bank_name"
@@ -74,6 +75,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_11_194910) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.vector "embedding", limit: 1536
     t.index ["user_id"], name: "index_invoices_on_user_id"
   end
 
