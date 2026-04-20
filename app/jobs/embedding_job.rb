@@ -8,7 +8,12 @@ class EmbeddingJob < ApplicationJob
     vector = EmbeddingService.embed(invoice.embedding_text)
     return unless vector
 
-    invoice.update_columns(embedding: vector)
+    # Prevent large embedding vectors from being written to the log.
+    # Silence the logger briefly while persisting the vector.
+    Rails.logger.silence do
+      invoice.update_columns(embedding: vector)
+    end
+
     Rails.logger.info "Embedding uložený pre faktúru ##{invoice_id}"
   end
 end

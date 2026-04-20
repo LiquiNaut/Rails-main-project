@@ -38,8 +38,7 @@ class ChatController < ApplicationController
     begin
       system_instructions = <<~SYS.strip
         Si priateľský asistent (FinanceGPT) pre správu faktúr.
-        Pri požiadavkách na zobrazenie dát z databázy použi nástroj 'sql_generator_tool'
-        a databázovú schému: #{SqlGeneratorTool.invoice_model_schema}.
+        Pri požiadavkách na zobrazenie dát z databázy použi nástroj 'sql_generator_tool'.
         Pri požiadavkách na zobrazenie grafov použi nástroje 'cashflow_chart' alebo 'income_breakdown'.
 
         ROZHODOVACIA LOGIKA PRE NÁSTROJE:
@@ -57,6 +56,9 @@ class ChatController < ApplicationController
         Ak požiadavka nesúvisí so zobrazením dát z databázy ani s grafmi, odpovedz priamo.
       SYS
 
+      # N +1 načítaní nástrojov - eager load všetkých tool_calls pre aktuálnu konverzáciu, aby sa predišlo ďalším dotazom pri generovaní odpovede
+      chat_record.messages.includes(:tool_calls).order(:created_at).load
+
       chat_record
         .with_instructions(system_instructions, replace: true)
         .with_temperature(0.0)
@@ -70,10 +72,10 @@ class ChatController < ApplicationController
       chart_data = extract_chart_data(chat_record)
       render json: { response: assistant_response.content, chart_data: chart_data }, status: :ok
     rescue ::SqlGeneratorTool::Error => e
-      Rails.logger.error "Chyba pri generovaní SQL: #{e.message}\n#{e.backtrace.join("\n")}"
+      Rails.logger.error "Chyba pri generovaní SQL: #{e.class}: #{e.message}"
       render json: { response: "⚠️ Nastala chyba pri generovaní SQL dotazu: #{e.message}" }, status: :ok
     rescue RubyLLM::Error => e
-      Rails.logger.error "Chyba pri komunikácii s LLM: #{e.message}\n#{e.backtrace.join("\n")}"
+      Rails.logger.error "Chyba pri komunikácii s LLM: #{e.class}: #{e.message}"
 
       user_facing_message = case e.message
                             when /quota|billing|exceeded/i
@@ -92,7 +94,7 @@ class ChatController < ApplicationController
 
       render json: { response: user_facing_message }, status: :ok
     rescue StandardError => e
-      Rails.logger.error "Všeobecná chyba v ChatController#ask: #{e.message}\n#{e.backtrace.join("\n")}"
+      Rails.logger.error "Všeobecná chyba v ChatController#ask: #{e.class}: #{e.message}"
       render json: { response: '⚠️ Nastala neočakávaná chyba. Skúste to znova.' }, status: :ok
     end
   end
