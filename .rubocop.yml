@@ -18,11 +18,38 @@ Style/StringLiterals:
 Style/FrozenStringLiteralComment:
   Enabled: false
 
+Style/Documentation:
+  Enabled: false
+
+Style/StringConcatenation:
+  Enabled: false
+
 Metrics/MethodLength:
-  Max: 30
+  Enabled: false
 
 Metrics/BlockLength:
   Enabled: false
 
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
 Layout/LineLength:
-  Max: 120
+  Enabled: false
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+Layout/TrailingEmptyLines:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false

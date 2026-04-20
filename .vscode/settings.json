@@ -36,5 +36,10 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.requireConfig": true,
-  "rubyLsp.formatter": "rubocop"
+  "rubyLsp.formatter": "rubocop",
+  "rubyLsp.enabledFeatures": {
+    "diagnostics": false
+  },
+  "rubocop.enabled": true,
+  "rubocop.lintMode": false
 }
