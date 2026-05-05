@@ -18,7 +18,12 @@ class ChatController < ApplicationController
   end
 
   def new
-    chat = Chat.create!(user: current_user, model: 'openai/gpt-4o-mini')
+    chat = Chat.create!(
+      user: current_user,
+      model: 'llama3.1:8b',
+      provider: :ollama,
+      assume_model_exists: true
+    )
     redirect_to chat_show_path(chat)
   end
 
@@ -47,6 +52,12 @@ class ChatController < ApplicationController
         - cashflow_chart: vizualizácia cashflow v čase
         - income_breakdown: piechart rozdelenia príjmov podľa klienta
 
+        DÔLEŽITÉ PRAVIDLÁ PRE SQL VÝSLEDKY:
+        - Po zavolaní sql_generator_tool MUSÍŠ všetky vrátené dáta CELÉ prepísať do svojej odpoveďe  ako Markdown tabuľku.
+        - Používateľ NEVIDÍ surové dáta z nástroja — vidí IBA tvoj text. Ak dáta nevypíšeš, používateľ nedostane odpoveď.
+        - Nikdy nepoužívaj SELECT *. Vyber iba stĺpce relevantné pre odpoveď (napr. invoice_number, total_price_without_tax, due_date).
+        - Nikdy nepíš iba "Tu sú výsledky" alebo "Dotaz bol vykonaný" — vždy vypíš konkrétne dáta.
+
         DÔLEŽITÉ PRAVIDLÁ PRE GRAFY:
         - Po zavolaní chart nástroja frontend AUTOMATICKY zobrazí interaktívny graf.
         - NIKDY negeneruj obrázky, base64 dáta ani markdown obrázky (![...]).
@@ -66,8 +77,18 @@ class ChatController < ApplicationController
         .with_tool(SemanticSearchTool.new)
         .with_tool(CashflowChartTool.new(current_user))
         .with_tool(IncomeBreakdownTool.new(current_user))
+      # .with_params(max_tokens: 1000)  #hard token limit odpovedi
+
+      llm_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
       assistant_response = chat_record.ask(user_message, with: { max_tokens: 200 })
+
+      llm_end = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      llm_duration_ms = ((llm_end - llm_start) * 1000).round(1)
+
+      last_message = chat_record.messages.last
+
+      log_tool_calls(chat_record, llm_duration_ms, last_message)
 
       chart_data = extract_chart_data(chat_record)
       render json: { response: assistant_response.content, chart_data: chart_data }, status: :ok
@@ -100,6 +121,42 @@ class ChatController < ApplicationController
   end
 
   private
+
+  def log_tool_calls(chat_record, llm_duration_ms, last_message)
+    since = 30.seconds.ago
+
+    tool_messages = chat_record.messages
+                               .includes(:tool_calls)
+                               .where(role: %w[assistant tool])
+                               .where('created_at > ?', since)
+                               .order(:created_at)
+                               .load
+
+    Rails.logger.info('─' * 60)
+    Rails.logger.info("⏱️  LLM TOTAL LATENCY: #{llm_duration_ms} ms")
+    Rails.logger.info("🧠 TOKENS | input: #{last_message.input_tokens} | output: #{last_message.output_tokens}")
+
+    tool_messages.each do |msg|
+      if msg.role == 'assistant' && msg.tool_calls.any?
+        msg.tool_calls.each do |tc|
+          parsed_args = begin
+            JSON.parse(tc.arguments)
+          rescue StandardError
+            tc.arguments
+          end
+
+          Rails.logger.info("🔧 TOOL SELECTED : #{tc.name}")
+          Rails.logger.info("📥 TOOL PARAMS   : #{JSON.pretty_generate(parsed_args)}")
+        end
+      end
+
+      if msg.role == 'tool'
+        Rails.logger.info("📤 TOOL RESULT   : #{msg.content&.truncate(500)}")
+      end
+    end
+
+    Rails.logger.info('─' * 60)
+  end
 
   def extract_chart_data(chat_record)
     last_user_msg = chat_record.messages.where(role: 'user').order(:created_at).last
