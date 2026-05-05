@@ -16,7 +16,7 @@ class CashflowChartTool < RubyLLM::Tool
 
     all_months = (months.to_i - 1).downto(0)
                                   .map { |i| i.months.ago.to_date.beginning_of_month }
-                                  .reverse
+                                  # .reverse
 
     income_by_month  = Hash.new(0.0)
     expense_by_month = Hash.new(0.0)
