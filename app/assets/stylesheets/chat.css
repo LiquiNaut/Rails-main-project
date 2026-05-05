@@ -22,3 +22,56 @@
     cursor: not-allowed;
     opacity: 0.7;
 }
+
+/* AI privacy notice banner — modern slim design */
+.ai-privacy-notice {
+  margin: 0 12px 8px;
+}
+
+.ai-privacy-notice-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-left: 3px solid #3b82f6;
+  border-radius: 8px;
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.ai-privacy-text {
+  flex: 1;
+}
+
+.ai-privacy-link {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ai-privacy-link:hover {
+  text-decoration: underline;
+  color: #1d4ed8;
+}
+
+.ai-privacy-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.ai-privacy-close:hover {
+  color: #4b5563;
+  background-color: #f3f4f6;
+}

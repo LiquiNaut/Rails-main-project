@@ -1,0 +1,14 @@
+<div class="ai-privacy-notice" data-controller="disclaimer" role="note" aria-label="Upozornenie na spracovanie údajov umelou inteligenciou">
+  <div class="ai-privacy-notice-inner">
+    <span class="ai-privacy-text">
+      Tento chat spracúva vaše dotazy pomocou AI.
+      Nezadávajte rodné čísla ani čísla kariet.
+      <%= link_to "Ochrana údajov →", "/privacy", class: "ai-privacy-link" %>
+    </span>
+    <button data-action="click->disclaimer#dismiss"
+            class="ai-privacy-close"
+            aria-label="Zavrieť">
+      ×
+    </button>
+  </div>
+</div>
