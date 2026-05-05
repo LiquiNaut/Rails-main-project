@@ -9,7 +9,7 @@ class SqlGeneratorTool < RubyLLM::Tool
     Generuj IBA SQL dotazy na základe týchto údajov kompatibilné s PostgresSQL.
 
     SCHÉMA DATABÁZY:
-    - invoices (id, user_id, invoice_number, total_price_without_tax, total_tax_amount_eur, issue_date)
+    - invoices (id, user_id, invoice_number, total_price_without_tax, total_tax_amount_eur, issue_date, product_type)
     - entities (id, invoice_id, entity_type, entity_name, first_name, last_name)
     - bank_details (id, invoice_id, iban, swift)
 
