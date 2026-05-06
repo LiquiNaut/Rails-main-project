@@ -100,3 +100,5 @@ group :test do
   gem "webdrivers"
 end
 gem 'neighbor', '~> 0.4'
+
+gem "kaminari", "~> 1.2"

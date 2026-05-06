@@ -1,133 +1,195 @@
-<% content_for :title, "Ochrana osobných údajov" %>
+<%# Privacy page — GDPR · FinanceGPT %>
 
-<div class="container py-5" style="max-width: 800px;">
-  <!-- Header -->
-  <div class="mb-10">
-    <p class="text-xs fw-semibold text-uppercase text-primary mb-2" style="letter-spacing: 0.1em;">
-      Ochrana osobných údajov
-    </p>
-    <h1 class="display-6 fw-semibold">Ako narábame s vašimi údajmi</h1>
-    <p class="text-muted mt-2 small">
-      Platné pre FinanceGPT — AI asistent pre fakturáciu
-    </p>
-  </div>
+<style>
+  .pp-hero {
+    background: #0f1117;
+    padding: 80px 24px 64px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .pp-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.15) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .pp-eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: 2.5px;
+    text-transform: uppercase; color: #3b82f6; margin-bottom: 14px;
+  }
+  .pp-hero h1 {
+    font-size: clamp(28px, 5vw, 46px); font-weight: 700;
+    color: #f8fafc; letter-spacing: -0.5px; margin-bottom: 12px; line-height: 1.15;
+  }
+  .pp-hero p { font-size: 14px; color: #64748b; max-width: 440px; margin: 0 auto; }
+  .pp-section { padding: 32px 0; border-bottom: 1px solid #e8e8e4; }
+  .pp-section:last-child { border-bottom: none; }
+  .pp-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #3b82f6; margin-bottom: 8px;
+  }
+  .pp-icon {
+    width: 40px; height: 40px; background: #f1f5f9; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .pp-text { font-size: 14px; color: #475569; line-height: 1.75; }
+  .pp-text strong { color: #1e293b; font-weight: 600; }
+  .pp-text a { color: #2563eb; }
+  .pp-warn {
+    background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px;
+    padding: 10px 14px; font-size: 13px; color: #92400e; margin-top: 12px;
+  }
+  .rights-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
+  .right-card {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 13px;
+  }
+  .right-card strong { display: block; font-size: 12px; color: #1e293b; margin-bottom: 3px; }
+  .right-card span { font-size: 12px; color: #64748b; }
+</style>
 
-  <!-- Prevádzkovateľ -->
-  <div class="py-4 border-top">
-    <div class="row">
-      <div class="col-3">
-        <p class="text-xs fw-semibold text-muted text-uppercase small" style="letter-spacing: 0.05em;">Prevádzkovateľ</p>
-      </div>
-      <div class="col-9">
-        <p class="small text-secondary lh-lg">
-          <strong>Bc. Boris Gašparovič</strong><br>
-          E-mail: <a href="mailto:boris@financegpt.sk" class="text-primary">boris@financegpt.sk</a><br>
-          Aplikácia je prototypom vyvinutým v rámci diplomovej práce na FEI STU Bratislava.
-        </p>
+<!-- Hero -->
+<div class="pp-hero">
+  <div class="pp-eyebrow">Ochrana osobných údajov</div>
+  <h1>Ako narábame<br>s vašimi údajmi</h1>
+  <p>Platné pre FinanceGPT — AI asistent pre fakturáciu. Posledná aktualizácia: máj 2026.</p>
+</div>
+
+<div class="container py-5" style="max-width: 760px;">
+
+  <!-- 1. Prevádzkovateľ -->
+  <div class="pp-section">
+    <div class="d-flex gap-3 align-items-start">
+      <div class="pp-icon">👤</div>
+      <div class="flex-1">
+        <div class="pp-label">Prevádzkovateľ</div>
+        <div class="pp-text">
+          Prevádzkovateľom osobných údajov je <strong>Bc. Boris Gašparovič</strong>,
+          autor aplikácie FinanceGPT, vytvorenej ako súčasť diplomovej práce na FEI STU Bratislava.<br>
+          Kontakt: <a href="mailto:boris@financegpt.sk">boris@financegpt.sk</a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Čo spracúvame -->
-  <div class="py-4 border-top">
-    <div class="row">
-      <div class="col-3">
-        <p class="text-xs fw-semibold text-muted text-uppercase small" style="letter-spacing: 0.05em;">Čo spracúvame</p>
-      </div>
-      <div class="col-9">
-        <p class="small text-secondary lh-lg">
-          Text správ zadaných do chatu a fakturačné údaje vášho účtu.
-          Nezadávajte rodné čísla, čísla kariet ani iné zvláštne kategórie údajov.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Právny základ -->
-  <div class="py-4 border-top">
-    <div class="row">
-      <div class="col-3">
-        <p class="text-xs fw-semibold text-muted text-uppercase small" style="letter-spacing: 0.05em;">Právny základ</p>
-      </div>
-      <div class="col-9">
-        <p class="small text-secondary lh-lg">
-          Oprávnený záujem prevádzkovateľa (čl. 6 ods. 1 písm. f GDPR) a plnenie zmluvy (písm. b).
-        </p>
+  <!-- 2. Čo spracúvame -->
+  <div class="pp-section">
+    <div class="d-flex gap-3 align-items-start">
+      <div class="pp-icon">📋</div>
+      <div class="flex-1">
+        <div class="pp-label">Čo spracúvame</div>
+        <div class="pp-text">
+          Aplikácia spracúva výhradne:
+          <ul class="mt-2">
+            <li>Textové otázky zadané do chatu</li>
+            <li>Fakturačné dáta (čísla faktúr, sumy, dátumy, odberatelia)</li>
+            <li>E-mailovú adresu a meno používateľa</li>
+          </ul>
+          <div class="pp-warn">
+            ⚠️ Nezadávajte rodné čísla, čísla platobných kariet ani iné osobitné kategórie osobných údajov podľa čl. 9 GDPR.
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Účel spracovania -->
-  <div class="py-4 border-top">
-    <div class="row">
-      <div class="col-3">
-        <p class="text-xs fw-semibold text-muted text-uppercase small" style="letter-spacing: 0.05em;">Účel spracovania</p>
-      </div>
-      <div class="col-9">
-        <p class="small text-secondary lh-lg">
-          Spracovanie údajov prebieha za účelom poskytnutia odpovede na používateľský dopyt,
-          vyhľadávania relevantných finančných informácií a zabezpečenia funkčnosti služby.
-          Asistent negeneruje trvalé záznamy o obsahu konverzácií nad rámec ukladania histórie
-          správ pre potreby kontinuity konverzácie.
-        </p>
+  <!-- 3. Právny základ -->
+  <div class="pp-section">
+    <div class="d-flex gap-3 align-items-start">
+      <div class="pp-icon">⚖️</div>
+      <div class="flex-1">
+        <div class="pp-label">Právny základ</div>
+        <div class="pp-text">
+          Spracúvanie prebieha na základe <strong>oprávneného záujmu</strong> (čl. 6 ods. 1 písm. f) GDPR)
+          za účelom poskytovania funkcií aplikácie, a <strong>plnenia zmluvy</strong>
+          (čl. 6 ods. 1 písm. b) GDPR) pri správe fakturačných údajov.
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Prenos do USA -->
-  <div class="py-4 border-top">
-    <div class="row">
-      <div class="col-3">
-        <p class="text-xs fw-semibold text-muted text-uppercase small" style="letter-spacing: 0.05em;">Prenos do USA</p>
-      </div>
-      <div class="col-9">
-        <p class="small text-secondary lh-lg">
-          Text správ je spracúvaný službou OpenAI, LLC (USA).
-          Prenos je zabezpečený štandardnými zmluvnými doložkami (SCC) podľa čl. 46 GDPR.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Doba uchovávania -->
-  <div class="py-4 border-top">
-    <div class="row">
-      <div class="col-3">
-        <p class="text-xs fw-semibold text-muted text-uppercase small" style="letter-spacing: 0.05em;">Doba uchovávania</p>
-      </div>
-      <div class="col-9">
-        <p class="small text-secondary lh-lg">
-          História chatu sa uchováva počas aktívnej session a automaticky sa vymaže po jej ukončení.
-          Fakturačné dáta sa uchovávajú po dobu trvania účtu.
-        </p>
+  <!-- 4. Účel -->
+  <div class="pp-section">
+    <div class="d-flex gap-3 align-items-start">
+      <div class="pp-icon">🎯</div>
+      <div class="flex-1">
+        <div class="pp-label">Účel spracovania</div>
+        <div class="pp-text">
+          <ul>
+            <li>Poskytovanie odpovedí na otázky prostredníctvom AI asistenta</li>
+            <li>Vyhľadávanie a sumarizácia finančných informácií z faktúr</li>
+            <li>Zabezpečenie kontinuity konverzácie (história správ)</li>
+            <li>Správa používateľského účtu a autentifikácia</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Vaše práva -->
-  <div class="py-4 border-top">
-    <div class="row">
-      <div class="col-3">
-        <p class="text-xs fw-semibold text-muted text-uppercase small" style="letter-spacing: 0.05em;">Vaše práva</p>
-      </div>
-      <div class="col-9">
-        <p class="small text-secondary lh-lg">
-          Máte právo na prístup (čl. 15), opravu (čl. 16), vymazanie (čl. 17), obmedzenie spracovania (čl. 18),
-          prenosnosť (čl. 20) a námietku (čl. 21).
-        </p>
-        <p class="small text-secondary lh-lg">
-          Sťažnosť môžete podať na Úrad na ochranu osobných údajov SR —
-          <a href="https://dataprotection.gov.sk" target="_blank" rel="noopener noreferrer" class="text-primary">dataprotection.gov.sk</a>.
-        </p>
+  <!-- 5. Prenos do USA -->
+  <div class="pp-section">
+    <div class="d-flex gap-3 align-items-start">
+      <div class="pp-icon">🌍</div>
+      <div class="flex-1">
+        <div class="pp-label">Prenos do USA — OpenAI</div>
+        <div class="pp-text">
+          Vaše otázky a relevantné fakturačné dáta sú odosielané do
+          <strong>OpenAI, Inc.</strong> (San Francisco, CA, USA) ako sprostredkovateľovi
+          na účely jazykového spracovania (modely GPT-4o).<br><br>
+          Prenos sa realizuje na základe <strong>štandardných zmluvných doložiek (SCCs)</strong>
+          podľa čl. 46 ods. 2 písm. c) GDPR, ktoré má OpenAI uzavreté.
+          Viac informácií: <a href="https://openai.com/policies/privacy-policy" target="_blank">openai.com/policies/privacy-policy</a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
-  <div class="pt-4 border-top">
-    <div class="d-flex justify-content-between text-xs text-muted small">
-      <span>© 2026 Bc. Boris Gašparovič — FEI STU</span>
-      <span>Naposledy aktualizované: máj 2026</span>
+  <!-- 6. Doba uchovávania -->
+  <div class="pp-section">
+    <div class="d-flex gap-3 align-items-start">
+      <div class="pp-icon">🕒</div>
+      <div class="flex-1">
+        <div class="pp-label">Doba uchovávania</div>
+        <div class="pp-text">
+          <ul>
+            <li><strong>História konverzácií:</strong> 30 dní od poslednej aktivity</li>
+            <li><strong>Fakturačné dáta:</strong> po dobu trvania účtu</li>
+            <li><strong>Registračné údaje:</strong> do vymazania účtu</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- 7. Vaše práva -->
+  <div class="pp-section">
+    <div class="d-flex gap-3 align-items-start">
+      <div class="pp-icon">🔐</div>
+      <div class="flex-1">
+        <div class="pp-label">Vaše práva</div>
+        <div class="pp-text">
+          Podľa GDPR máte právo na:
+          <div class="rights-grid">
+            <div class="right-card"><strong>Prístup</strong><span>Zistiť, aké údaje spracúvame</span></div>
+            <div class="right-card"><strong>Opravu</strong><span>Nechať opraviť nesprávne údaje</span></div>
+            <div class="right-card"><strong>Výmaz</strong><span>Požiadať o vymazanie údajov</span></div>
+            <div class="right-card"><strong>Prenosnosť</strong><span>Získať údaje v čitateľnom formáte</span></div>
+            <div class="right-card"><strong>Námietku</strong><span>Namietať spracúvanie</span></div>
+            <div class="right-card"><strong>Obmedzenie</strong><span>Obmedziť spracúvanie počas riešenia námietky</span></div>
+          </div>
+          <div class="mt-3">
+            Žiadosti zasielajte na <a href="mailto:boris@financegpt.sk">boris@financegpt.sk</a>.
+            Sťažnosť môžete podať na
+            <a href="https://dataprotection.gov.sk" target="_blank">Úrad na ochranu osobných údajov SR</a>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer stránky -->
+<div class="border-top py-3 text-center text-muted small">
+  © 2026 Bc. Boris Gašparovič — FEI STU Bratislava &nbsp;·&nbsp; Naposledy aktualizované: máj 2026
 </div>

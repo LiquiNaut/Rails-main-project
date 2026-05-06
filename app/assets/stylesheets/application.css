@@ -1,5 +1,205 @@
+/* ============================================================
+   FinanceGPT — Bootstrap 5.2 Theme Override
+   ============================================================ */
+:root {
+  /* Brand colors */
+  --fg-blue:        #2563eb;
+  --fg-blue-hover:  #1d4ed8;
+  --fg-blue-light:  #eff6ff;
+  --fg-red:         #dc2626;
+
+  /* Neutrals */
+  --fg-bg:          #f8fafc;
+  --fg-surface:     #ffffff;
+  --fg-border:      #e2e8f0;
+  --fg-text:        #0f172a;
+  --fg-muted:       #64748b;
+  --fg-sidebar-bg:  #0f1117;
+
+  /* Bootstrap overrides via CSS vars */
+  --bs-primary:          #2563eb;
+  --bs-primary-rgb:      37, 99, 235;
+  --bs-body-bg:          #f8fafc;
+  --bs-body-color:       #0f172a;
+  --bs-border-color:     #e2e8f0;
+  --bs-border-radius:    0.5rem;
+  --bs-border-radius-lg: 0.75rem;
+  --bs-font-sans-serif:  'Inter', system-ui, -apple-system, sans-serif;
+  --bs-box-shadow:       0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --bs-box-shadow-sm:    0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── Global resets ── */
+body {
+  font-family: var(--bs-font-sans-serif);
+  background: var(--fg-bg);
+  color: var(--fg-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Navbar ── */
+.navbar {
+  background: var(--fg-surface) !important;
+  border-bottom: 1px solid var(--fg-border);
+  box-shadow: var(--bs-box-shadow-sm);
+  padding: 0.75rem 1.5rem;
+}
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--fg-text) !important;
+  letter-spacing: -0.3px;
+}
+.nav-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fg-muted) !important;
+  padding: 0.4rem 0.75rem !important;
+  border-radius: 0.4rem;
+  transition: background 0.15s, color 0.15s;
+}
+.nav-link:hover { background: var(--fg-blue-light); color: var(--fg-blue) !important; }
+.nav-link.text-danger { color: #dc2626 !important; }
+.nav-link.text-danger:hover { background: #fef2f2; }
+
+/* ── Buttons ── */
+.btn {
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  transition: all 0.15s;
+  border-width: 1px;
+}
+.btn-primary {
+  background: var(--fg-blue);
+  border-color: var(--fg-blue);
+  box-shadow: 0 1px 2px rgba(37,99,235,0.2);
+}
+.btn-primary:hover {
+  background: var(--fg-blue-hover);
+  border-color: var(--fg-blue-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(37,99,235,0.25);
+}
+.btn-outline-secondary {
+  border-color: var(--fg-border);
+  color: var(--fg-muted);
+}
+.btn-outline-secondary:hover { background: var(--fg-bg); color: var(--fg-text); }
+.btn-warning  { background: #f59e0b; border-color: #f59e0b; color: #fff; }
+.btn-warning:hover { background: #d97706; border-color: #d97706; color: #fff; }
+.btn-danger   { background: var(--fg-red); border-color: var(--fg-red); }
+.btn-sm { padding: 0.3rem 0.75rem; font-size: 0.8rem; }
+
+/* ── Cards ── */
+.card {
+  border: 1px solid var(--fg-border);
+  border-radius: var(--bs-border-radius-lg);
+  box-shadow: var(--bs-box-shadow-sm);
+  background: var(--fg-surface);
+}
+.card-header {
+  background: var(--fg-surface);
+  border-bottom: 1px solid var(--fg-border);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 1rem 1.25rem;
+}
+
+/* ── Forms ── */
+.form-control, .form-select {
+  border: 1px solid var(--fg-border);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  padding: 0.55rem 0.85rem;
+  background: var(--fg-surface);
+  color: var(--fg-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--fg-blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.35rem;
+}
+
+/* ── Tables ── */
+.table {
+  font-size: 0.875rem;
+  border-color: var(--fg-border);
+}
+.table thead th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--fg-muted);
+  border-bottom: 2px solid var(--fg-border);
+  padding: 0.75rem 1rem;
+  background: var(--fg-bg);
+}
+.table tbody td {
+  padding: 0.85rem 1rem;
+  vertical-align: middle;
+  border-color: var(--fg-border);
+}
+.table-hover tbody tr:hover { background: var(--fg-blue-light); }
+
+/* ── Alerts / Notices ── */
+.alert {
+  border-radius: 0.6rem;
+  border-width: 1px;
+  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+}
+.alert-success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.alert-danger   { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.alert-info     { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+.alert-warning  { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+
+/* ── Page headers (h1 on pages) ── */
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--fg-text);
+  margin-bottom: 0.25rem;
+}
+.page-subtitle {
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+}
+
+/* ── Footer ── */
+footer, .footer {
+  background: var(--fg-surface);
+  border-top: 1px solid var(--fg-border);
+  font-size: 0.75rem;
+  color: var(--fg-muted);
+  padding: 0.6rem 1.5rem;
+  text-align: center;
+}
+
+/* ── Badges ── */
+.badge { font-size: 0.7rem; font-weight: 600; border-radius: 0.35rem; padding: 0.3em 0.6em; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--fg-border); border-radius: 3px; }
+
 /*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
+* This is a manifest file that'll be compiled into application.css, which will include all the files
  * listed below.
  *
  * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's

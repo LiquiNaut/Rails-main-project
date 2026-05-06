@@ -1,106 +1,152 @@
-<div class="form-signin my-4 mx-auto w-75">
-  <%= form_with(model: invoice) do |form| %>
-    <div class="container p-5 bg-white rounded">
-      <div class="row">
-        <!-- Entities: SELLER/BUYER/TAX_REPRESENTATIVE -->
-        <%= form.label "Názov faktúry: " %>
-        <%= form.text_field :invoice_name, class: "form-control mb-3", value: sanitize(invoice.invoice_name) %>
+<div class="container py-5" style="max-width: 860px;">
+  <div class="mb-4">
+    <p class="page-subtitle">Faktúry</p>
+    <h1 class="page-title"><%= action_name == "new" ? "Vytvoriť faktúru" : "Upraviť faktúru" %></h1>
+  </div>
+  <div class="card">
+    <div class="card-body p-4">
+      <%= form_with(model: invoice) do |form| %>
 
-        <%= form.label "Vyhľadanie osoby alebo firmy podľa mena: " %>
-        <%= form.text_field :search_entity_text, class: "select2-enable form-control mb-3" %>
-        <%#= form.hidden_field :search_entity, class: "select2-enable form-control mb-3", style: "width: 100%;" %>
+        <div class="mb-3">
+          <%= form.label "Názov faktúry", class: "form-label" %>
+          <%= form.text_field :invoice_name, class: "form-control", value: sanitize(invoice.invoice_name) %>
+        </div>
 
-        <% invoice.entities.each do |entity| %>
+        <div class="mb-3">
+          <%= form.label "Vyhľadanie osoby alebo firmy podľa mena", class: "form-label" %>
+          <%= form.text_field :search_entity_text, class: "select2-enable form-control" %>
+        </div>
+
+        <!-- Entities: SELLER / BUYER / TAX_REPRESENTATIVE -->
+        <h6 class="text-muted text-uppercase small fw-600 mb-3" style="letter-spacing:.5px">Osoby / Firmy</h6>
+        <div class="row g-4">
+          <% invoice.entities.each do |entity| %>
+            <div class="col-md-4">
+              <%= form.fields_for :entities, [entity] do |ff| %>
+                <h6 class="fw-600 mb-2" style="font-size:0.85rem;"><%= ff.object.entity_type %></h6>
+                <%= render 'entity', f: ff %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Invoice details -->
+        <h6 class="text-muted text-uppercase small fw-600 mb-3" style="letter-spacing:.5px">Detaily faktúry</h6>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <%= form.label "Číslo faktúry", class: "form-label" %>
+            <%= form.text_field :invoice_number, class: "form-control", value: sanitize(invoice.invoice_number) %>
+          </div>
+          <div class="col-md-6">
+            <%= form.label "Dátum vystavenia faktúry", class: "form-label" %>
+            <%= form.date_field :issue_date, class: "form-control" %>
+          </div>
+          <div class="col-md-6">
+            <%= form.label "Dodací/Prepravný dátum", class: "form-label" %>
+            <%= form.date_field :shipping_date, class: "form-control" %>
+          </div>
+          <div class="col-md-6">
+            <%= form.label "Dátum splatnosti", class: "form-label" %>
+            <%= form.date_field :due_date, class: "form-control" %>
+          </div>
+          <div class="col-12">
+            <%= form.label "Údaje o dodanom novom dopravnom prostriedku", class: "form-label" %>
+            <%= form.text_field :vehicle_information, class: "form-control", value: sanitize(invoice.vehicle_information) %>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-md-6">
+            <div class="form-check">
+              <%= form.check_box :self_issued_invoice, class: "form-check-input" %>
+              <%= form.label "Vyhotovenie faktúry odberateľom", class: "form-check-label" %>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-check">
+              <%= form.check_box :tax_liability_shift, class: "form-check-input" %>
+              <%= form.label "Prenesenie daňovej povinnosti", class: "form-check-label" %>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Product details -->
+        <h6 class="text-muted text-uppercase small fw-600 mb-3" style="letter-spacing:.5px">Tovar / Služba</h6>
+        <div class="row g-3">
           <div class="col-md-4">
-            <%= form.fields_for :entities, [entity] do |ff| %>
-              <h5><%= ff.object.entity_type %></h5>
-              <%= render 'entity', f: ff %>
-            <% end %>
+            <%= form.label "Úprava zdaňovania prirážky", class: "form-label" %>
+            <%= form.text_field :tax_adjustment_type, {class: "form-control", placeholder: "prirážka: €", value: sanitize(invoice.tax_adjustment_type)} %>
+          </div>
+          <div class="col-md-4">
+            <%= form.label "Druh dodaného tovaru", class: "form-label" %>
+            <%= form.text_field :product_type, class: "form-control", value: sanitize(invoice.product_type) %>
+          </div>
+          <div class="col-md-4">
+            <%= form.label "Množstvo dodaného tovaru", class: "form-label" %>
+            <%= form.number_field :product_quantity, {class: "form-control", placeholder: "ks"} %>
+          </div>
+          <div class="col-md-3">
+            <%= form.label "Jednotková cena bez DPH", class: "form-label" %>
+            <%= form.text_field :unit_price_without_tax, {class: "form-control", placeholder: "€"} %>
+          </div>
+          <div class="col-md-3">
+            <%= form.label "Celková cena bez DPH", class: "form-label" %>
+            <%= form.text_field :total_price_without_tax, {class: "form-control", placeholder: "€"} %>
+          </div>
+          <div class="col-md-3">
+            <%= form.label "Sadzba DPH (%)", class: "form-label" %>
+            <%= form.text_field :vat_rate_percentage, {class: "form-control", placeholder: "%"} %>
+          </div>
+          <div class="col-md-3">
+            <%= form.label "Výška dane spolu", class: "form-label" %>
+            <%= form.text_field :total_tax_amount_eur, {class: "form-control", placeholder: "€"} %>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Bank details -->
+        <h6 class="text-muted text-uppercase small fw-600 mb-3" style="letter-spacing:.5px">Bankové údaje</h6>
+        <%= form.fields_for :bank_detail do |bd| %>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <%= bd.label :bank_name, "Banka", class: "form-label" %>
+              <%= bd.text_field :bank_name, {class: "form-control", placeholder: "napr. Tatra Banka", value: sanitize(invoice.bank_detail.bank_name)} %>
+            </div>
+            <div class="col-md-4">
+              <%= bd.label :iban, "IBAN", class: "form-label" %>
+              <%= bd.text_field :iban, {class: "form-control", placeholder: "SK89 7500 0000 0000 1234 5671", value: sanitize(invoice.bank_detail.iban)} %>
+            </div>
+            <div class="col-md-4">
+              <%= bd.label :swift, "SWIFT Kód", class: "form-label" %>
+              <%= bd.text_field :swift, class: "form-control", value: sanitize(invoice.bank_detail.swift) %>
+            </div>
+            <div class="col-md-4">
+              <%= bd.label :var_symbol, "Variabilný symbol", class: "form-label" %>
+              <%= bd.text_field :var_symbol, class: "form-control", value: sanitize(invoice.bank_detail.var_symbol) %>
+            </div>
+            <div class="col-md-4">
+              <%= bd.label :konst_symbol, "Konštantný symbol", class: "form-label" %>
+              <%= bd.text_field :konst_symbol, class: "form-control", value: sanitize(invoice.bank_detail.konst_symbol) %>
+            </div>
           </div>
         <% end %>
-      </div>
 
-      <hr>
-
-      <!-- Invoice -->
-      <div class="row">
-        <div class="col-md-12">
-
-          <%= form.label "Číslo faktúry" %>
-          <%= form.text_field :invoice_number, class: "form-control mb-3", value: sanitize(invoice.invoice_number) %>
-
-          <%= form.label "Dátum vystavenia faktúry" %>
-          <%= form.date_field :issue_date, class: "form-control mb-3"%>
-
-          <%= form.label "Dodací/Prepravný dátum" %>
-          <%= form.date_field :shipping_date, class: "form-control mb-3" %>
-
-          <%= form.label "Dátum splatnosti" %>
-          <%= form.date_field :due_date, class: "form-control mb-3" %>
-
-          <%= form.label "Údaje o dodanom novom dopravnom prostriedku" %>
-          <%= form.text_field :vehicle_information, class: "form-control mb-3", value: sanitize(invoice.vehicle_information) %>
-
-          <hr>
-
-          <%= form.label "Vyhotovenie faktúry odberateľom" %>
-          <%= form.check_box :self_issued_invoice, class: "form-check-input mb-3" %>
-
-          <%= form.label "Prenesenie daňovej povinnosti" %>
-          <%= form.check_box :tax_liability_shift, class: "form-check-input mb-3" %>
-
-          <hr>
-
-          <%= form.label "Úprava zdaňovania prirážky" %>
-          <%= form.text_field :tax_adjustment_type, {class: "form-control mb-3", placeholder: "prirážka: €", value: sanitize(invoice.tax_adjustment_type)} %>
-
-          <%= form.label "druh dodaného tovaru" %>
-          <%= form.text_field :product_type, class: "form-control mb-3", value: sanitize(invoice.product_type) %>
-
-          <%= form.label "Množstvo dodaného tovaru" %>
-          <%= form.number_field :product_quantity, {class: "form-control mb-3", placeholder: "ks"} %>
-
-          <%= form.label "Jednotková cena bez DPH" %>
-          <%= form.text_field :unit_price_without_tax, {class: "form-control mb-3", placeholder: "€"} %>
-
-          <%= form.label "Celková cena bez DPH" %>
-          <%= form.text_field :total_price_without_tax, {class: "form-control mb-3", placeholder: "€"} %>
-
-          <%= form.label "Sadzba DPH (percentuálna hodnota)" %>
-          <%= form.text_field :vat_rate_percentage, {class: "form-control mb-3", placeholder: "%"} %>
-
-          <%= form.label "Výška dane spolu v eurách" %>
-          <%= form.text_field :total_tax_amount_eur, {class: "form-control mb-3", placeholder: "€"} %>
-
-          <hr>
-
-          <%= form.fields_for :bank_detail do |bd| %>
-            <%= bd.label :bank_name, "Banka" %>
-            <%= bd.text_field :bank_name, {class: "form-control mb-3", placeholder: "priklad: Tatra Banka", value: sanitize(invoice.bank_detail.bank_name)} %>
-
-            <%= bd.label :iban, "IBAN" %>
-            <%= bd.text_field :iban, {class: "form-control mb-3", placeholder: "príklad: SK89 7500 0000 0000 1234 5671", value: sanitize(invoice.bank_detail.iban)} %>
-
-            <%= bd.label :swift, "SWIFT Kód" %>
-            <%= bd.text_field :swift, class: "form-control mb-3", value: sanitize(invoice.bank_detail.swift) %>
-
-            <%= bd.label :var_symbol, "Variabilný symbol" %>
-            <%= bd.text_field :var_symbol, class: "form-control mb-3", value: sanitize(invoice.bank_detail.var_symbol) %>
-
-            <%= bd.label :konst_symbol, "Konštantný symbol" %>
-            <%= bd.text_field :konst_symbol, class: "form-control mb-3", value: sanitize(invoice.bank_detail.konst_symbol) %>
-          <% end %>
-
+        <div class="d-none">
+          <%= form.number_field :user_id, type: :hidden, class: "form-control", value: current_user.id %>
         </div>
-      </div>
-    </div>
 
-    <div class="form-group mb-3">
-      <%= form.number_field :user_id, type: :hidden, class: "form-control", value: current_user.id %>
+        <div class="d-flex gap-2 mt-4">
+          <%= form.submit "Uložiť", class: "btn btn-primary" %>
+          <%= link_to "Späť", user_path(current_user), class: "btn btn-outline-secondary" %>
+        </div>
+      <% end %>
     </div>
-
-    <%= form.submit "Uložiť", class: "btn btn-lg btn-light my-auto" %>
-  <% end %>
+  </div>
 </div>
 
 <script type="text/javascript" charset="utf-8">
@@ -300,11 +346,5 @@
                 $("#country-buyer").val(country.name);
             }
         });
-
-        // Synchronize select2 with text field
-        // $('.select2-enable').on('select2:select', function (e) {
-        //     var data = e.params.data;
-        //     $('#search_entity_text').val(data.text);
-        // });
     });
 </script>

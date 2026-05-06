@@ -1,41 +1,68 @@
-<div class="p-5 mb-4 text-light rounded-3 text-start">
-  <div class="container-fluid py-5">
+<div class="container-lg py-3">
+  <!-- Page header -->
+  <div class="d-flex align-items-start justify-content-between mb-3">
+    <div>
+      <p class="page-subtitle mb-0">Prihlásený ako</p>
+      <h1 class="page-title" style="font-size:1.25rem;"><%= current_user.email %></h1>
+    </div>
+    <div class="d-flex gap-2">
+      <%= link_to edit_user_registration_path, class: "btn btn-outline-secondary btn-sm" do %>
+        <i class="fas fa-user-pen me-1"></i> Upraviť profil
+      <% end %>
+      <%= link_to new_invoice_path, class: "btn btn-primary btn-sm" do %>
+        <i class="fas fa-plus me-1"></i> Nová faktúra
+      <% end %>
+    </div>
+  </div>
 
-    <%= render partial: "users/user_card", locals: { user: user } %>
-
-    <p class="card-text">
-      <%= link_to "Upraviť profil", edit_user_registration_path, class: "btn btn-outline-warning" %>
-      <%= link_to "Vytvoriť faktúru", new_invoice_path, class: "btn btn-outline-dark" %>
-    </p>
-
-    <% if @user_invoices.length > 0 %>
-      <table class="table text-light table-active">
+  <!-- Invoice table -->
+  <div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between py-2">
+      <span><i class="fas fa-file-invoice me-2 text-primary"></i>Faktúry</span>
+      <span class="badge bg-primary"><%= @user_invoices.total_count %></span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0" style="font-size:0.825rem;">
         <thead>
-        <tr>
-          <th scope="col"><%= "Názov faktrúry" %></th>
-          <th scope="col"><%= "Číslo faktúry" %></th>
-          <th scope="col"><%= "Akcie" %></th>
-          <th scope="col"></th>
-        </tr>
+          <tr>
+            <th style="padding:0.5rem 0.75rem;">Názov faktúry</th>
+            <th style="padding:0.5rem 0.75rem;">Číslo faktúry</th>
+            <th style="padding:0.5rem 0.75rem;">Dátum</th>
+            <th style="padding:0.5rem 0.75rem;">Suma</th>
+            <th style="width:140px;padding:0.5rem 0.75rem;">Akcie</th>
+          </tr>
         </thead>
         <tbody>
-        <% @user_invoices.each do |invoice| %>
-          <tr class="text-light">
-            <td><%= "#{invoice&.invoice_name}" %></td>
-            <td><%= "#{invoice&.invoice_number}" %></td>
-            <td>
-              <%= link_to "Zobraziť", invoice_path(invoice), class: "btn btn-light btn-sm" %>
-              <%= link_to "Upraviť", edit_invoice_path(invoice), class: "btn btn-warning btn-sm" %>
-            </td>
-            <td><%= button_to "Vymazať", invoice, method: :delete, form: { data: { turbo_confirm: "Si si istý?" } }, class: "btn btn-danger btn-sm" %></td>
-          </tr>
-        <% end %>
-
+          <% @user_invoices.each do |invoice| %>
+            <tr>
+              <td style="padding:0.45rem 0.75rem;" class="fw-500"><%= invoice.invoice_name %></td>
+              <td style="padding:0.45rem 0.75rem;"><code class="text-muted"><%= invoice.invoice_number %></code></td>
+              <td style="padding:0.45rem 0.75rem;" class="text-muted"><%= invoice.issue_date&.strftime("%d.%m.%Y") %></td>
+              <td style="padding:0.45rem 0.75rem;" class="fw-500"><%= number_to_currency(invoice.total_price_without_tax, unit: "€", format: "%n %u") %></td>
+              <td style="padding:0.45rem 0.75rem;">
+                <div class="d-flex gap-1">
+                  <%= link_to invoice_path(invoice), class: "btn btn-outline-secondary btn-sm", style: "padding:0.2rem 0.5rem;font-size:0.75rem;" do %>
+                    <i class="fas fa-eye"></i>
+                  <% end %>
+                  <%= link_to edit_invoice_path(invoice), class: "btn btn-warning btn-sm", style: "padding:0.2rem 0.5rem;font-size:0.75rem;" do %>
+                    <i class="fas fa-pen"></i>
+                  <% end %>
+                  <%= link_to invoice_path(invoice), method: :delete, 
+                        data: { confirm: "Naozaj vymazať?", turbo_method: :delete },
+                        class: "btn btn-danger btn-sm", style: "padding:0.2rem 0.5rem;font-size:0.75rem;" do %>
+                    <i class="fas fa-trash"></i>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
         </tbody>
       </table>
-
-      <%#= page_entries_info @user_invoices %>
-      <%#= paginate @user_invoices, theme: 'bootstrap-5', pagination_class: "my-3 pagination-sm flex-wrap justify-content-center" %>
+    </div>
+    <% if @user_invoices.total_pages > 1 %>
+      <div class="d-flex justify-content-center py-2 border-top">
+        <%= paginate @user_invoices, window: 1, outer_window: 0 %>
+      </div>
     <% end %>
   </div>
 </div>

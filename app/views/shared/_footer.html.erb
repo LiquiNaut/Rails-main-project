@@ -1,12 +1,12 @@
-<div class="d-flex justify-content-center align-items-center mb-3">
-  <div>
-    <% if user_signed_in? %>
-      Vitaj <b><%= current_user.email %></b>
-    <% end %>
-    <p>Copyright © Gašparovič Boris</p>
-    <p>
-      V prípade otázok ma môžte kontaktovať na:
+<footer>
+  <div class="container-lg">
+    <div>
+      <% if user_signed_in? %>
+        Prihlásený ako <strong><%= current_user.email %></strong><br>
+      <% end %>
+      Copyright &copy; Gašparovič Boris &nbsp;·&nbsp;
       <a href="mailto:gasparovicboris@gmail.com">gasparovicboris@gmail.com</a>
-    </p>
+      &nbsp;·&nbsp; <%= link_to "Ochrana osobných údajov", privacy_policy_path, class: "text-muted" %>
+    </div>
   </div>
-</div>
+</footer>

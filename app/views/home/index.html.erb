@@ -1,12 +1,22 @@
-<div class="py-5 my-auto text-center w-75 mx-auto">
-  <h1 class="display-5 fw-bold">Faktúry</h1>
-  <h1 class="display-5 fw-bold"></h1>
-  <div class="col-lg-6 mx-auto w-100">
-    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-      <% unless user_signed_in? %>
-        <%=  link_to "Prihlasiť sa", new_user_session_path, class:"btn btn-light px-4 gap-3" , data: { turbo_prefetch: false }  %>
-        <%=  link_to "Registrácia", new_user_registration_path, class:"btn btn-dark px-4" , data: { turbo_prefetch: false }  %>
-      <% end %>
+<div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: var(--fg-bg);">
+  <div class="text-center" style="max-width: 480px; padding: 0 24px;">
+    <div class="mb-4">
+      <div style="width:56px;height:56px;background:var(--fg-blue-light);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:26px;">
+        💰
+      </div>
+      <h1 class="display-6 fw-bold mb-2" style="letter-spacing:-0.5px;color:var(--fg-text);">FinanceGPT</h1>
+      <p class="text-muted" style="font-size:0.95rem;">AI asistent pre fakturáciu. Jednoducho. Bezpečne.</p>
     </div>
+
+    <% unless user_signed_in? %>
+      <div class="d-flex gap-3 justify-content-center">
+        <%= link_to "Prihlásiť sa", new_user_session_path, class: "btn btn-primary px-4", data: { turbo_prefetch: false } %>
+        <%= link_to "Registrácia", new_user_registration_path, class: "btn btn-outline-secondary px-4", data: { turbo_prefetch: false } %>
+      </div>
+    <% else %>
+      <div class="d-flex gap-3 justify-content-center">
+        <%= link_to "Môj profil", user_path(current_user), class: "btn btn-primary px-4", data: { turbo_prefetch: false } %>
+      </div>
+    <% end %>
   </div>
 </div>

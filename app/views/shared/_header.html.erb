@@ -1,13 +1,20 @@
-<div>
-  <%= link_to 'Faktúry', root_path, class:"navbar-brand fs-2 my-auto fw-bold float-md-start text-white" %>
-  <nav class="nav nav-masthead justify-content-center float-md-end m-0">
-    <% if user_signed_in? %>
-      <%= link_to "Môj profil", user_path(current_user), class:"nav-link text-white fw-bold px-2", data: { turbo_prefetch: false } %>
-      <%= link_to "Chat s AI", chat_path, class:"nav-link text-white fw-bold px-2", data: { turbo_prefetch: false } %>
-      <%= button_to "Odhlásiť sa", destroy_user_session_path, method: :delete, class:"btn btn-link nav-link fw-bold px-2 text-danger danger", data: { turbo_prefetch: false }  %>
-    <% else %>
-      <%= link_to "Registrovať sa", new_user_registration_path, class:"nav-link fw-bold px-2", data: { turbo_prefetch: false }  %>
-      <%= link_to "Prihlásiť sa", new_user_session_path, class:"nav-link fw-bold px-2 text-info", data: { turbo_prefetch: false }  %>
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container-lg">
+    <%= link_to root_path, class: "navbar-brand" do %>
+      FinanceGPT
     <% end %>
-  </nav>
-</div>
+    <div class="d-flex align-items-center gap-2 ms-auto">
+      <% if user_signed_in? %>
+        <%= link_to "Faktúry", user_path(current_user), class: "nav-link" %>
+        <%= link_to "Chat s AI", chat_path, class: "nav-link" %>
+        <%= link_to "Môj profil", edit_user_registration_path, class: "nav-link" %>
+        <%= link_to "Odhlásiť sa", destroy_user_session_path, method: :delete,
+              class: "nav-link text-danger",
+              data: { turbo_method: :delete } %>
+      <% else %>
+        <%= link_to "Prihlásiť sa", new_user_session_path, class: "btn btn-outline-secondary btn-sm" %>
+        <%= link_to "Registrácia", new_user_registration_path, class: "btn btn-primary btn-sm" %>
+      <% end %>
+    </div>
+  </div>
+</nav>

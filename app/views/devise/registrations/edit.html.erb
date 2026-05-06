@@ -1,47 +1,54 @@
-<h1 class="text-center"><%= "Upraviť profil" %></h1>
-
-<div class="form-signin my-4 mx-auto w-75">
-  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-    <%= render "devise/shared/error_messages", resource: resource %>
-
-    <div class="form-group mb-3">
-      <%= f.label :email %><br />
-      <%= f.email_field :email, autofocus: true, autocomplete: "email", class:"form-control" %>
-    </div>
-
-    <div class="form-group mb-3">
-      <%= f.label "Aktuálne heslo" %> <i>(<%= "Zadajte aktuálne heslo pre potvrdenie zmien." %>)</i><br />
-      <%= f.password_field :current_password, autocomplete: "current-password", class:"form-control" %>
-    </div>
-
-    <hr>
-
-    <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-      <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
-    <% end %>
-
-    <div class="form-group mb-3">
-      <%= f.label "Nové heslo" %> <i>(<%= "Nechajte prázdne, ak nechcete zmeniť." %>)</i><br/>
-      <%= f.password_field :password, autocomplete: "new-password", class:"form-control" %>
-      <% if @minimum_password_length %>
-        <br />
-        <em><%= "Heslo musí obsahovať minimálne #{@minimum_password_length} znakov!" %> </em>
-      <% end %>
-    </div>
-
-    <div class="form-group mb-3">
-      <%= f.label "Potvrdenie nového hesla" %><br />
-      <%= f.password_field :password_confirmation, autocomplete: "new-password", class:"form-control" %>
-    </div>
-
-    <div class="actions">
-      <%= f.submit "Upraviť", class:"btn btn-lg btn-light my-4" %>
-    </div>
-  <% end %>
-
-  <div class="d-flex justify-content-center">
-    <%= link_to "Späť", :back, class:"btn btn-dark my-auto mx-2" %>
-    <%= button_to "Zmazať profil", registration_path(resource_name), data: { confirm: "#{t(:delete_confirmatiom)}" }, method: :delete, class:"btn btn-danger my-auto mx-2" %>
+<div class="container py-5" style="max-width: 560px;">
+  <div class="mb-4">
+    <p class="page-subtitle">Profil</p>
+    <h1 class="page-title">Upraviť profil</h1>
   </div>
 
+  <div class="card">
+    <div class="card-body p-4">
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="mb-3">
+          <%= f.label :email, "Email", class: "form-label" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :current_password, "Aktuálne heslo", class: "form-label" %>
+          <span class="text-muted small">(Zadajte aktuálne heslo pre potvrdenie zmien)</span>
+          <%= f.password_field :current_password, autocomplete: "current-password", class: "form-control" %>
+        </div>
+
+        <hr>
+
+        <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+          <div class="alert alert-info">Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+        <% end %>
+
+        <div class="mb-3">
+          <%= f.label :password, "Nové heslo", class: "form-label" %>
+          <span class="text-muted small">(Nechajte prázdne, ak nechcete zmeniť)</span>
+          <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
+          <% if @minimum_password_length %>
+            <em class="text-muted small">Heslo musí obsahovať minimálne <%= @minimum_password_length %> znakov!</em>
+          <% end %>
+        </div>
+
+        <div class="mb-4">
+          <%= f.label :password_confirmation, "Potvrdenie nového hesla", class: "form-label" %>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
+        </div>
+
+        <div class="d-flex gap-2">
+          <%= f.submit "Upraviť", class: "btn btn-primary" %>
+          <%= link_to "Späť", :back, class: "btn btn-outline-secondary" %>
+          <%= button_to "Zmazať profil", registration_path(resource_name),
+                data: { confirm: "Naozaj chcete zmazať profil?" },
+                method: :delete,
+                class: "btn btn-danger ms-auto" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>

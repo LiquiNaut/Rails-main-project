@@ -7,7 +7,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user_invoices = @user.invoices
+    @user_invoices = @user.invoices.order(created_at: :desc).page(params[:page]).per(6)
   end
 
   private
