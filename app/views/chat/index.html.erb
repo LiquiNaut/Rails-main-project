@@ -1,114 +1,147 @@
-<% content_for :body_class, "chat-page" %>
-
 <% content_for :head do %>
-  <style>
-    body.chat-page { overflow: hidden; }
-    body.chat-page main {
-      flex: 1 1 0;
-      overflow: hidden;
-      margin: 0 !important;
-      padding: 4px !important;
-      max-width: 100% !important;
-      display: flex;
-      align-items: stretch;
-    }
-    body.chat-page footer { display: none; }
-  </style>
+  <%= stylesheet_link_tag "chat", "data-turbo-track": "reload" %>
 <% end %>
 
-<div class="container-fluid h-100 py-1 chat-page-layout"
+<%# FinanceGPT Chat — Full-viewport layout %>
+
+<div class="chat-layout"
      data-controller="chat"
      data-chat-chat-ask-path-value="<%= chat_ask_path %>"
      data-chat-chat-id-value="<%= @chat_record&.id %>">
-  <div class="row h-100">
 
-    <!-- Sidebar so zoznamom chatov -->
-    <div class="col-md-3 col-lg-2 h-100">
-      <div class="card shadow h-100" style="overflow-y: auto;">
-        <div class="card-header bg-primary text-white py-2">
-          <strong>Konverzácie</strong>
-        </div>
-        <div class="card-body p-2">
-          <%= button_to 'Nový chat', chat_new_path, method: :post, class: 'btn btn-success btn-sm w-100 mb-2' %>
-          <div class="list-group list-group-flush">
-            <% @chats.each do |chat| %>
-              <% first_msg = chat.messages.where(role: 'user').order(:created_at).first %>
-              <% label = first_msg ? first_msg.content.to_s.truncate(28) : chat.created_at.strftime("%d.%m. %H:%M") %>
-              <div class="list-group-item p-1 d-flex align-items-center gap-1 <%= 'active' if @chat_record&.id == chat.id %>">
-                <%= link_to label, chat_show_path(chat),
-                      class: "flex-grow-1 text-decoration-none text-truncate small #{'text-white' if @chat_record&.id == chat.id}" %>
-                <%= button_to '✕', "/chat/#{chat.id}", method: :delete,
-                      data: { confirm: 'Naozaj zmazať?' },
-                      class: 'btn btn-sm btn-danger py-0 px-1' %>
-              </div>
-            <% end %>
-            <% if @chats.empty? %>
-              <p class="text-muted small text-center mt-2">Žiadne konverzácie</p>
-            <% end %>
-          </div>
-        </div>
-      </div>
+  <%# ── SIDEBAR ── %>
+  <aside class="chat-sidebar">
+    <div class="chat-sidebar-header">
+      <%= button_to chat_new_path, method: :post, class: "btn-new-chat" do %>
+        <i class="fas fa-plus"></i>
+        <span>Nový chat</span>
+      <% end %>
     </div>
 
-    <!-- Hlavná plocha chatu -->
-    <div class="col-md-9 col-lg-10 h-100">
-      <div class="card shadow h-100">
-        <div class="card-header bg-primary text-white py-2">
-          <h5 class="mb-0">Chat s AI</h5>
-        </div>
-        <%= render "shared/ai_privacy_notice" %>
-        <div class="card-body d-flex flex-column p-3 h-100">
-          <div id="chat-messages" class="flex-grow-1 mb-3" style="overflow-y: auto; height: 0;" data-chat-target="messages">
-            <% if @chat_history && @chat_history.any? %>
-              <% @chat_history.each do |msg| %>
-                <% next if msg[:content].blank? || msg[:role] == 'system' %>
-                
-                <% if msg[:role] == 'tool' %>
-                  <% begin %>
-                    <% chart_data = JSON.parse(msg[:content]) %>
-                    <% if chart_data.is_a?(Hash) && chart_data['chart_type'] %>
-                      <!-- Tool message with chart data - will be rendered by renderExistingCharts() -->
-                      <div data-chart="<%= h(msg[:content]) %>"
-                           class="alert alert-light border small text-muted p-2"
-                           style="max-width: 500px;">
-                        Loading chart...
-                      </div>
-                    <% else %>
-                      <!-- Tool message without valid chart type: <%= chart_data.keys rescue "error" %> -->
-                    <% end %>
-                  <% rescue => e %>
-                    <!-- JSON Parse Error in tool message: <%= e.message %> -->
-                    <!-- Content snippet: <%= msg[:content].to_s.truncate(50) %> -->
-                  <% end %>
-                <% else %>
-                  <!-- Regular user/ai messages -->
-                  <div class="<%= msg[:role] == 'user' ? 'user' : 'ai' %>-message mb-3">
-                    <p class="<%= msg[:role] == 'user' ? 'text-end' : 'text-start' %>">
-                      <span class="<%= msg[:role] == 'user' ? 'bg-light' : 'bg-primary text-white' %> p-2 rounded d-inline-block">
-                        <%= sanitize msg[:content] %>
-                      </span>
-                    </p>
-                  </div>
-                <% end %>
-              <% end %>
-            <% else %>
-              <div class="text-muted text-center mt-4">
-                <p>Vitajte v chate! Ako vám môžem pomôcť?</p>
-              </div>
+    <div class="chat-sidebar-list">
+      <% if @chats.present? %>
+        <% @chats.each do |chat| %>
+          <% first_msg = chat.messages.where(role: 'user').order(:created_at).first %>
+          <% label = first_msg ? first_msg.content.to_s.truncate(28) : chat.created_at.strftime("%d.%m. %H:%M") %>
+          <div class="chat-sidebar-item <%= 'active' if @chat_record&.id == chat.id %>">
+            <%= link_to label, chat_show_path(chat), class: "conv-link" %>
+            <%= button_to "/chat/#{chat.id}", method: :delete,
+                  class: "btn-delete",
+                  data: { confirm: "Naozaj zmazať?" } do %>
+              <i class="fas fa-xmark"></i>
             <% end %>
           </div>
-          <div class="mt-auto">
-            <div class="input-group mb-2">
-              <label for="prompt-input"></label>
-              <input type="text" id="prompt-input" class="form-control" placeholder="Napíšte správu..."
-                     data-chat-target="input" data-action="keypress->chat#sendMessageOnEnter">
-              <button id="send-button" class="btn btn-primary"
-                      data-chat-target="sendButton" data-action="click->chat#sendMessage">Odoslať</button>
-            </div>
+        <% end %>
+      <% else %>
+        <p class="text-muted small text-center p-3" style="opacity:.5">
+          Žiadne konverzácie
+        </p>
+      <% end %>
+    </div>
+  </aside>
+
+  <%# ── MAIN CHAT AREA ── %>
+  <div class="chat-main">
+
+    <%# Header %>
+    <div class="chat-header">
+      <div class="chat-header-title">
+        <span class="ai-dot"></span>
+        Chat s AI
+      </div>
+      <span class="text-muted small">FinanceGPT &middot; <%= @chat_record&.model&.name || 'AI' %></span>
+    </div>
+
+    <%# AI Notice — dismissible %>
+    <%= render "shared/ai_privacy_notice" %>
+
+    <%# Messages %>
+    <div class="chat-messages" id="chatMessages" data-chat-target="messages">
+      <% if @chat_history.blank? %>
+        <div class="chat-empty">
+          <div class="chat-empty-icon"><i class="fas fa-robot"></i></div>
+          <h3>Ako vám môžem pomôcť?</h3>
+          <p>Opýtajte sa na svoje faktúry, príjmy, výdavky alebo cashflow.</p>
+          <div class="d-flex flex-wrap gap-2 justify-content-center mt-2">
+            <% ["Koľko mám faktúr?", "Aký je môj cashflow?", "Kto mi dlhuje?"].each do |q| %>
+              <button class="chat-suggestion" onclick="fillInput(this.textContent.trim())">
+                <%= q %>
+              </button>
+            <% end %>
           </div>
         </div>
+      <% else %>
+        <% @chat_history.each do |msg| %>
+          <% next if msg[:content].blank? || msg[:role] == 'system' %>
+          <% if msg[:role] == 'tool' %>
+            <% begin %>
+              <% chart_data = JSON.parse(msg[:content]) %>
+              <% if chart_data.is_a?(Hash) && chart_data['chart_type'] %>
+                <div data-chart="<%= h(msg[:content]) %>"
+                     class="alert alert-light border small text-muted p-2"
+                     style="max-width: 500px;">
+                  Loading chart...
+                </div>
+              <% end %>
+            <% rescue => e %>
+              <!-- JSON Parse Error: <%= e.message %> -->
+            <% end %>
+          <% else %>
+            <div class="message <%= msg[:role] == 'user' ? 'user' : 'assistant' %>">
+              <div class="message-avatar">
+                <% if msg[:role] == 'user' %>
+                  <i class="fas fa-user"></i>
+                <% else %>
+                  <i class="fas fa-robot"></i>
+                <% end %>
+              </div>
+              <div class="message-bubble">
+                <%= sanitize msg[:content] %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%# Input %>
+    <div class="chat-input-area">
+      <div class="chat-input-row">
+        <label for="prompt-input" class="visually-hidden">Správa</label>
+        <textarea id="prompt-input"
+                  class="chat-textarea"
+                  placeholder="Napíšte správu… (Enter = odoslať)"
+                  rows="1"
+                  data-chat-target="input"
+                  data-action="keypress->chat#sendMessageOnEnter"
+                  autocomplete="off"></textarea>
+        <button class="chat-send-btn"
+                data-chat-target="sendButton"
+                data-action="click->chat#sendMessage">
+          <i class="fas fa-arrow-up"></i>
+        </button>
       </div>
+      <p class="text-center text-muted mt-2" style="font-size:11px;opacity:.6;">
+        AI môže robiť chyby. Overte dôležité finančné informácie.
+      </p>
     </div>
 
   </div>
 </div>
+
+<script>
+  const msgs = document.getElementById('chatMessages');
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+
+  function fillInput(text) {
+    const ta = document.querySelector('.chat-textarea');
+    if (ta) { ta.value = text; ta.focus(); }
+  }
+
+  document.querySelectorAll('.chat-textarea').forEach(ta => {
+    ta.addEventListener('input', () => {
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 140) + 'px';
+    });
+  });
+</script>

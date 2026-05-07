@@ -18,12 +18,7 @@ class ChatController < ApplicationController
   end
 
   def new
-    chat = Chat.create!(
-      user: current_user,
-      model: 'llama3.1:8b',
-      provider: :ollama,
-      assume_model_exists: true
-    )
+    chat = Chat.create!(user: current_user, model: 'openai/gpt-4o-mini')
     redirect_to chat_show_path(chat)
   end
 
