@@ -280,6 +280,7 @@ body.chat-page .footer {
 }
 .message.user      { align-self: flex-end;  flex-direction: row-reverse; }
 .message.assistant { align-self: flex-start; }
+.message.assistant:has(table) { max-width: 92%; }
 
 .message-avatar {
   width: 28px; height: 28px;
@@ -316,6 +317,70 @@ body.chat-page .footer {
 .user-message { align-self: flex-end; max-width: 75%; }
 .ai-message   { align-self: flex-start; max-width: 75%; }
 .user-message p, .ai-message p { margin: 0; }
+
+/* Markdown content inside message bubbles */
+.message-bubble p,
+.ai-message p { margin-bottom: 0.4em; }
+.message-bubble p:last-child,
+.ai-message p:last-child { margin-bottom: 0; }
+
+/* Scrollable wrapper so wide tables don't break layout */
+.message-bubble,
+.ai-message .bg-primary {
+  overflow-x: auto;
+}
+
+.message-bubble table,
+.ai-message table {
+  border-collapse: collapse;
+  min-width: 100%;
+  margin: 10px 0 6px;
+  font-size: 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.message-bubble thead,
+.ai-message thead {
+  background: #f1f5f9;
+  border-bottom: 2px solid #d1d5db;
+}
+
+.message-bubble th,
+.ai-message th {
+  padding: 8px 14px;
+  font-weight: 600;
+  color: #374151;
+  text-align: left;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.message-bubble td,
+.ai-message td {
+  padding: 7px 14px;
+  text-align: left;
+  white-space: nowrap;
+  color: #1e293b;
+  border-top: 1px solid #e5e7eb;
+}
+
+.message-bubble tbody tr:hover,
+.ai-message tbody tr:hover {
+  background: #eff6ff;
+}
+
+.message-bubble tbody tr:nth-child(even),
+.ai-message tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+.message-bubble tbody tr:nth-child(even):hover,
+.ai-message tbody tr:nth-child(even):hover {
+  background: #eff6ff;
+}
 
 /* Typing indicator */
 .typing-indicator { display: flex; gap: 4px; align-items: center; padding: 4px 2px; }

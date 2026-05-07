@@ -96,7 +96,7 @@
                 <% end %>
               </div>
               <div class="message-bubble">
-                <%= sanitize msg[:content] %>
+                <%= markdown_to_html(msg[:content]) %>
               </div>
             </div>
           <% end %>

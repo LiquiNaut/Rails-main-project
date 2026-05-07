@@ -1,8 +1,10 @@
 import { Controller } from '@hotwired/stimulus';
 import { Chart, registerables } from 'chart.js';
+import { marked } from 'marked';
 
-console.log('Chat controller file loaded');
+console.log('Chat controller file loaded — v2 with marked.js');
 Chart.register(...registerables);
+marked.use({ gfm: true, breaks: true });
 
 // Connects to data-controller="chat"
 export default class extends Controller {
@@ -171,29 +173,36 @@ export default class extends Controller {
 
   addMessage(sender, text) {
     if (!this.hasMessagesTarget || !text || text.trim() === '') return;
-    console.log(`Adding message - Sender: ${sender}`);
+
+    if (sender === 'system') {
+      const systemDiv = document.createElement('div');
+      systemDiv.className = 'system-message text-center text-muted small my-2';
+      systemDiv.textContent = text;
+      this.messagesTarget.appendChild(systemDiv);
+      this.scrollToBottom();
+      return;
+    }
 
     const messageDiv = document.createElement('div');
-    messageDiv.className = `${sender}-message mb-3`;
+    messageDiv.className = `message ${sender === 'user' ? 'user' : 'assistant'}`;
 
-    const messagePara = document.createElement('p');
-    messagePara.className = sender === 'user' ? 'text-end' : 'text-start';
+    const avatar = document.createElement('div');
+    avatar.className = 'message-avatar';
+    avatar.innerHTML = sender === 'user'
+      ? '<i class="fas fa-user"></i>'
+      : '<i class="fas fa-robot"></i>';
 
-    const span = document.createElement('span');
-    let spanClasses = 'p-2 rounded d-inline-block';
-    if (sender === 'user') {
-      spanClasses += ' bg-light';
-    } else if (sender === 'ai') {
-      spanClasses += ' bg-primary text-white';
+    const bubble = document.createElement('div');
+    bubble.className = 'message-bubble';
+
+    if (sender === 'ai') {
+      bubble.innerHTML = marked.parse(text);
     } else {
-      messagePara.className = 'system-message';
-      spanClasses = '';
+      bubble.textContent = text;
     }
-    if (spanClasses) span.setAttribute('class', spanClasses);
 
-    span.textContent = text;
-    messagePara.appendChild(span);
-    messageDiv.appendChild(messagePara);
+    messageDiv.appendChild(avatar);
+    messageDiv.appendChild(bubble);
 
     this.messagesTarget.appendChild(messageDiv);
     this.scrollToBottom();

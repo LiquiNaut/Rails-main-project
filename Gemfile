@@ -35,6 +35,7 @@ gem "jbuilder", "~> 2.13.0"
 gem "devise", "~> 4.9.3"
 
 # gem na vsetko ohladom LLM
+gem 'redcarpet', '~> 3.6'
 gem 'ruby_llm', '~> 1.13'
 
 # Ruby's built-in Vector class for embeddings

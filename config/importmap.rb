@@ -7,3 +7,4 @@ pin '@hotwired/stimulus-loading', to: 'stimulus-loading.js', preload: true
 pin_all_from 'app/javascript/controllers', under: 'controllers'
 pin 'chart.js', to: 'https://esm.sh/chart.js@4.4.7'
 pin '@kurkle/color', to: 'https://esm.sh/@kurkle/color@0.3.2'
+pin 'marked', to: 'https://esm.sh/marked@15'
