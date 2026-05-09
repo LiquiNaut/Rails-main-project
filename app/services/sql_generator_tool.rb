@@ -23,6 +23,11 @@ class SqlGeneratorTool < RubyLLM::Tool
   MAX_RESULT_CHARS = 2000
   EXCLUDED_COLUMNS = %w[embedding].freeze
 
+  def initialize(user)
+    super()
+    @user_id = user.id
+  end
+
   def execute(sql:, **arguments)
     Rails.logger.info "Arguments received by SqlGeneratorTool#execute: #{sql.inspect}, #{arguments.inspect}"
 
@@ -32,7 +37,7 @@ class SqlGeneratorTool < RubyLLM::Tool
         return 'Chyba zabezpečenia: Bol vygenerovaný nepovolený SQL dotaz. Môžem vykonávať iba SELECT dotazy.'
       end
 
-      safe_sql = sql
+      safe_sql = apply_tenant_filter(sql)
       Rails.logger.info "Vykonávam SQL dotaz: #{safe_sql}"
       result = ActiveRecord::Base.connection.execute(safe_sql)
 
@@ -66,7 +71,33 @@ class SqlGeneratorTool < RubyLLM::Tool
     end
   end
 
-  # private
+  private
+
+  def apply_tenant_filter(sql)
+    normalized = sql.rstrip.chomp(';')
+
+    if normalized.match?(/\bFROM\s+invoices\b|\bJOIN\s+invoices\b/i)
+      inject_filter(normalized, "invoices.user_id = #{@user_id.to_i}")
+    elsif normalized.match?(/\bFROM\s+entities\b|\bJOIN\s+entities\b/i)
+      inject_filter(normalized, "entities.invoice_id IN (SELECT id FROM invoices WHERE user_id = #{@user_id.to_i})")
+    else
+      normalized
+    end
+  end
+
+  def inject_filter(sql, filter)
+    if sql.match?(/\bWHERE\b/i)
+      sql.sub(/\bWHERE\b/i, "WHERE #{filter} AND ")
+    else
+      keyword = sql.match(/\b(GROUP\s+BY|ORDER\s+BY|HAVING|LIMIT)\b/i)
+      if keyword
+        pos = keyword.begin(0)
+        "#{sql[0...pos]}WHERE #{filter} #{sql[pos..]}"
+      else
+        "#{sql} WHERE #{filter}"
+      end
+    end
+  end
 
   # The `inject_limit` method is commented out to disable automatic LIMIT injection.
   # def inject_limit(sql, max: 50)

@@ -8,6 +8,11 @@ class SemanticSearchTool < RubyLLM::Tool
   param :query, desc: 'Prirodzený jazyk — čo hľadáš vo faktúrach.'
   param :limit, desc: 'Maximálny počet výsledkov (default 5).', required: false
 
+  def initialize(user)
+    super()
+    @user_id = user.id
+  end
+
   def execute(query:, limit: 5, **)
     Rails.logger.info "SemanticSearchTool: '#{query}', limit=#{limit}"
 
@@ -15,6 +20,7 @@ class SemanticSearchTool < RubyLLM::Tool
     return 'Chyba: nepodarilo sa vytvoriť embedding pre dotaz.' unless vector
 
     results = Invoice
+              .where(user_id: @user_id)
               .nearest_neighbors(:embedding, vector, distance: :cosine)
               .limit(limit.to_i.clamp(1, 20))
               .includes(:entities) # upravené na :entities namiesto :entity

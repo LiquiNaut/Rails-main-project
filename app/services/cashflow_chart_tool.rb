@@ -7,6 +7,7 @@ class CashflowChartTool < RubyLLM::Tool
   param :months, type: :integer, desc: 'Number of past months to include, default 12', required: false
 
   def initialize(user)
+    super()
     @user = user
   end
 

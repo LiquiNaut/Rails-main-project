@@ -7,6 +7,7 @@ class IncomeBreakdownTool < RubyLLM::Tool
   param :year, type: :integer, desc: 'Year to filter e.g. 2025. If omitted uses all data.', required: false
 
   def initialize(user)
+    super()
     @user = user
   end
 

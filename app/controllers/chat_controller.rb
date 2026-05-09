@@ -68,8 +68,8 @@ class ChatController < ApplicationController
       chat_record
         .with_instructions(system_instructions, replace: true)
         .with_temperature(0.0)
-        .with_tool(SqlGeneratorTool.new)
-        .with_tool(SemanticSearchTool.new)
+        .with_tool(SqlGeneratorTool.new(current_user))
+        .with_tool(SemanticSearchTool.new(current_user))
         .with_tool(CashflowChartTool.new(current_user))
         .with_tool(IncomeBreakdownTool.new(current_user))
       # .with_params(max_tokens: 1000)  #hard token limit odpovedi
