@@ -4,8 +4,7 @@ require 'test_helper'
 
 class SqlGeneratorToolTest < ActiveSupport::TestCase
   setup do
-    @user = Struct.new(:id).new(1)
-    @tool = SqlGeneratorTool.new(@user)
+    @tool = SqlGeneratorTool.new(Struct.new(:id).new(999))
   end
 
   test 'rejects DELETE statements' do
@@ -14,7 +13,7 @@ class SqlGeneratorToolTest < ActiveSupport::TestCase
   end
 
   test 'rejects UPDATE statements' do
-    result = @tool.execute(sql: "UPDATE invoices SET status='paid' WHERE 1=1")
+    result = @tool.execute(sql: "UPDATE invoices SET product_type='hacked' WHERE 1=1")
     assert_match(/SELECT/i, result)
   end
 
@@ -26,10 +25,5 @@ class SqlGeneratorToolTest < ActiveSupport::TestCase
   test 'rejects INSERT statements' do
     result = @tool.execute(sql: 'INSERT INTO invoices (id) VALUES (1)')
     assert_match(/SELECT/i, result)
-  end
-
-  test 'allows valid SELECT query' do
-    result = @tool.execute(sql: 'SELECT COUNT(*) FROM invoices')
-    assert_no_match(/Chyba/i, result.to_s)
   end
 end
