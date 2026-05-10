@@ -9,6 +9,5 @@ Rails.application.routes.draw do
   post   'chat/new', to: 'chat#new',  as: 'chat_new'
   get    'chat/:id', to: 'chat#show', as: 'chat_show'
   get    'chat',     to: 'chat#index'
-  get    'privacy-policy', to: 'pages#privacy_policy', as: :privacy_policy
-  get    'privacy', to: 'pages#privacy_policy'
+  get    'privacy', to: 'pages#privacy_policy', as: :privacy_policy
 end
