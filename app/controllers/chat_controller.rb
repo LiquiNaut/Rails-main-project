@@ -89,29 +89,29 @@ class ChatController < ApplicationController
       render json: { response: assistant_response.content, chart_data: chart_data }, status: :ok
     rescue ::SqlGeneratorTool::Error => e
       Rails.logger.error "Chyba pri generovaní SQL: #{e.class}: #{e.message}"
-      render json: { response: "⚠️ Nastala chyba pri generovaní SQL dotazu: #{e.message}" }, status: :ok
+      render json: { response: "Nastala chyba pri generovaní SQL dotazu: #{e.message}" }, status: :ok
     rescue RubyLLM::Error => e
       Rails.logger.error "Chyba pri komunikácii s LLM: #{e.class}: #{e.message}"
 
       user_facing_message = case e.message
                             when /quota|billing|exceeded/i
-                              '⚠️ Prekročená kvóta OpenAI API. Skontroluj fakturáciu na platform.openai.com.'
+                              'Prekročená kvóta OpenAI API. Skontroluj fakturáciu na platform.openai.com.'
                             when /invalid_api_key|Unauthorized|authentication/i
-                              '⚠️ Neplatný API kľúč. Skontroluj konfiguráciu aplikácie.'
+                              'Neplatný API kľúč. Skontroluj konfiguráciu aplikácie.'
                             when /rate_limit|too many requests/i
-                              '⚠️ Príliš veľa požiadaviek. Skúste to znova o chvíľu.'
+                              'Príliš veľa požiadaviek. Skúste to znova o chvíľu.'
                             when /timeout|timed out/i
-                              '⚠️ Požiadavka vypršala. Skúste to znova.'
+                              'Požiadavka vypršala. Skúste to znova.'
                             when /context_length|maximum context/i
-                              '⚠️ Konverzácia je príliš dlhá. Začni novú konverzáciu.'
+                              'Konverzácia je príliš dlhá. Začni novú konverzáciu.'
                             else
-                              '⚠️ Nastala chyba pri komunikácii s AI. Skúste to znova.'
+                              'Nastala chyba pri komunikácii s AI. Skúste to znova.'
                             end
 
       render json: { response: user_facing_message }, status: :ok
     rescue StandardError => e
       Rails.logger.error "Všeobecná chyba v ChatController#ask: #{e.class}: #{e.message}"
-      render json: { response: '⚠️ Nastala neočakávaná chyba. Skúste to znova.' }, status: :ok
+      render json: { response: 'Nastala neočakávaná chyba. Skúste to znova.' }, status: :ok
     end
   end
 
@@ -128,8 +128,8 @@ class ChatController < ApplicationController
                                .load
 
     Rails.logger.info('─' * 60)
-    Rails.logger.info("⏱️  LLM TOTAL LATENCY: #{llm_duration_ms} ms")
-    Rails.logger.info("🧠 TOKENS | input: #{last_message.input_tokens} | output: #{last_message.output_tokens}")
+    Rails.logger.info("LLM TOTAL LATENCY: #{llm_duration_ms} ms")
+    Rails.logger.info("TOKENS | input: #{last_message.input_tokens} | output: #{last_message.output_tokens}")
 
     tool_messages.each do |msg|
       if msg.role == 'assistant' && msg.tool_calls.any?
@@ -140,13 +140,13 @@ class ChatController < ApplicationController
             tc.arguments
           end
 
-          Rails.logger.info("🔧 TOOL SELECTED : #{tc.name}")
-          Rails.logger.info("📥 TOOL PARAMS   : #{JSON.pretty_generate(parsed_args)}")
+          Rails.logger.info("TOOL SELECTED : #{tc.name}")
+          Rails.logger.info("TOOL PARAMS   : #{JSON.pretty_generate(parsed_args)}")
         end
       end
 
       if msg.role == 'tool'
-        Rails.logger.info("📤 TOOL RESULT   : #{msg.content&.truncate(500)}")
+        Rails.logger.info("TOOL RESULT   : #{msg.content&.truncate(500)}")
       end
     end
 

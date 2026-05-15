@@ -1,7 +1,3 @@
-/* ============================================================
-   FinanceGPT — Chat Page · Full-viewport layout
-   ============================================================ */
-
 /* ── Body overrides (chat page only) ── */
 body.chat-page {
   overflow: hidden;
@@ -33,9 +29,6 @@ body.chat-page .footer {
   background: var(--fg-bg);
 }
 
-/* ════════════════════════════════
-   SIDEBAR
-   ════════════════════════════════ */
 .chat-sidebar {
   width: 260px;
   min-width: 260px;
@@ -140,9 +133,7 @@ body.chat-page .footer {
   background: rgba(220,38,38,0.2); color: #f87171;
 }
 
-/* ════════════════════════════════
-   MAIN CHAT AREA
-   ════════════════════════════════ */
+
 .chat-main {
   flex: 1;
   display: flex;

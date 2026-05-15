@@ -23,7 +23,7 @@ class SemanticSearchTool < RubyLLM::Tool
               .where(user_id: @user_id)
               .nearest_neighbors(:embedding, vector, distance: :cosine)
               .limit(limit.to_i.clamp(1, 20))
-              .includes(:entities) # upravené na :entities namiesto :entity
+              .includes(:entities)
 
     return "Nenašli sa žiadne faktúry pre dotaz: '#{query}'." if results.empty?
 
